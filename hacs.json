@@ -1,0 +1,7 @@
+{
+  "name": "Electrolux Care Integration (Not Official)",
+  "hacs": "1.23.0",
+  "domains": ["binary_sensor", "sensor"],
+  "iot_class": "Cloud Polling",
+  "homeassistant": "2022.2.9"
+}

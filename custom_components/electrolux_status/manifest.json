@@ -1,0 +1,19 @@
+{
+  "domain": "electrolux_status",
+  "name": "Electrolux Care Integration",
+  "config_flow": true,
+  "documentation": "https://github.com/mauro-midolo/homeassistant_electrolux_status",
+  "issue_tracker": "https://github.com/mauro-midolo/homeassistant_electrolux_status/issues",
+  "requirements": [
+    "pyelectroluxconnect==0.1.2"
+  ],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": [
+    "@mauro-midolo"
+  ],
+  "iot_class": "cloud_polling",
+  "version": "1.2.0"
+}
