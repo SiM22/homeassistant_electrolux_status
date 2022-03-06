@@ -1,16 +1,15 @@
 """Adds config flow for Electrolux Status."""
-import voluptuous as vol
+import logging
 
 import homeassistant.helpers.config_validation as cv
+import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
-import pyelectroluxconnect
 
+from .pyelectroluxconnect_util import pyelectroluxconnect_util
 from .const import CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 from .const import CONF_USERNAME
 from .const import DOMAIN
-
-import logging
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -53,7 +52,7 @@ class ElectroluxStatusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     def async_get_options_flow(config_entry):
         return ElectroluxStatusOptionsFlowHandler(config_entry)
 
-    async def _show_config_form(self, user_input):
+    async def _show_config_form(self, user_input):  # pylint: disable=unused-argument
         """Show the configuration form to edit location data."""
         return self.async_show_form(
             step_id="user",
@@ -69,11 +68,12 @@ class ElectroluxStatusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def _test_credentials(self, username, password):
         """Return true if credentials is valid."""
         try:
-            client = pyelectroluxconnect.Session(username, password)
+            client = pyelectroluxconnect_util.get_session(username, password)
             await self.hass.async_add_executor_job(client.login)
             return True
         except Exception as inst:  # pylint: disable=broad-except
             _LOGGER.exception(inst)
+            pass
         return False
 
 
@@ -85,7 +85,7 @@ class ElectroluxStatusOptionsFlowHandler(config_entries.OptionsFlow):
         self.config_entry = config_entry
         self.options = dict(config_entry.options)
 
-    async def async_step_init(self, user_input=None):
+    async def async_step_init(self, user_input=None):  # pylint: disable=unused-argument
         """Manage the options."""
         return await self.async_step_user()
 

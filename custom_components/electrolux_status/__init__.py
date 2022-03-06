@@ -11,8 +11,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady, ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
-import pyelectroluxconnect
 
+from .pyelectroluxconnect_util import pyelectroluxconnect_util
 from .api import Appliance, Appliances, ElectroluxLibraryEntity
 from .const import CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 from .const import CONF_USERNAME
@@ -41,7 +41,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
 
-    client = pyelectroluxconnect.Session(username, password)
+    client = pyelectroluxconnect_util.get_session(username, password)
 
     coordinator = ElectroluxStatusDataUpdateCoordinator(hass, client=client, update_interval=update_interval)
     if not await coordinator.async_login():
