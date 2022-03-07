@@ -10,6 +10,7 @@ Tested with Electrolux and AEG washer-dryer, but probably could be used with som
 ### Supported and tested devices
 
 - ELECTROLUX EW9H283BY - PerfectCare 900
+- AEG L6FBG841CA - 6000 Series Autodose
 
 ## Prerequisites
 - All devices need configured into "My Electrolux Care" application
