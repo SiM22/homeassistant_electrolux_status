@@ -24,10 +24,10 @@ class ElectroluxLibraryEntity:
         if attr_name in [self.profiles[k].get("name") for k in self.profiles]:
             for k in self.profiles:
                 if attr_name == self.profiles[k].get("name"):
-                    if "numberValue" in self.profiles[k].keys():
-                        return self.profiles[k].get("numberValue")
                     if "stringValue" in self.profiles[k].keys():
                         return self.profiles[k].get("stringValue")
+                    if "numberValue" in self.profiles[k].keys():
+                        return self.profiles[k].get("numberValue")
         return None
 
     def value_exists(self, attr_name):
@@ -104,6 +104,10 @@ class Appliance:
                 name=f"{data.get_name()} Time To End",
                 attr='TimeToEnd',
                 unit=TIME_SECONDS,
+            ),
+            ApplianceSensor(
+                name=f"{data.get_name()} Cycle Phase",
+                attr='CyclePhase'
             )
         ]
         self.entities = [
