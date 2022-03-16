@@ -7,7 +7,7 @@ from homeassistant import config_entries
 from homeassistant.core import callback
 
 from .pyelectroluxconnect_util import pyelectroluxconnect_util
-from .const import CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+from .const import CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, CONF_REGION
 from .const import CONF_USERNAME
 from .const import DOMAIN
 
@@ -34,7 +34,7 @@ class ElectroluxStatusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             valid = await self._test_credentials(
-                user_input[CONF_USERNAME], user_input[CONF_PASSWORD]
+                user_input[CONF_USERNAME], user_input[CONF_PASSWORD], user_input[CONF_REGION]
             )
             if valid:
                 return self.async_create_entry(
@@ -54,21 +54,28 @@ class ElectroluxStatusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def _show_config_form(self, user_input):  # pylint: disable=unused-argument
         """Show the configuration form to edit location data."""
+        data_schema = {
+            vol.Required(CONF_USERNAME): str,
+            vol.Required(CONF_PASSWORD): str
+        }
+        if self.show_advanced_options:
+            data_schema = {
+                vol.Required(CONF_USERNAME): str,
+                vol.Required(CONF_PASSWORD): str,
+                vol.Optional(CONF_REGION, default="emea"): str
+            }
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_USERNAME): str,
-                    vol.Required(CONF_PASSWORD): str
-                }
+                data_schema
             ),
             errors=self._errors,
         )
 
-    async def _test_credentials(self, username, password):
+    async def _test_credentials(self, username, password, region):
         """Return true if credentials is valid."""
         try:
-            client = pyelectroluxconnect_util.get_session(username, password)
+            client = pyelectroluxconnect_util.get_session(username, password, region)
             await self.hass.async_add_executor_job(client.login)
             return True
         except Exception as inst:  # pylint: disable=broad-except
