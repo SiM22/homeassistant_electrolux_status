@@ -52,5 +52,10 @@ class ElectroluxStatusEntity(CoordinatorEntity):
 
     @property
     def device_class(self):
-        """Return de device class of the sensor."""
+        """Return the device class of the sensor."""
         return self.get_entity.device_class
+
+    @property
+    def entity_category(self):
+        """Return the entity category of the sensor."""
+        return self.get_entity.entity_category
