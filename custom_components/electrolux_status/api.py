@@ -124,15 +124,15 @@ class Appliance:
                 entity_category=EntityCategory.DIAGNOSTIC,
             ),
             ApplianceBinary(
-                name=f"{data.get_name()} Door Locked",
+                name=f"{data.get_name()} Door",
+                attr='DoorState', field='numberValue',
+                device_class=DEVICE_CLASS_DOOR,
+            ),
+            ApplianceBinary(
+                name=f"{data.get_name()} Door Lock",
                 attr='DoorLock', field='numberValue',
                 device_class=DEVICE_CLASS_LOCK,
                 invert=True,
-            ),
-            ApplianceBinary(
-                name=f"{data.get_name()} Door Open",
-                attr='DoorState', field='numberValue',
-                device_class=DEVICE_CLASS_DOOR,
             ),
             ApplianceSensor(
                 name=f"{data.get_name()} Time To End",
