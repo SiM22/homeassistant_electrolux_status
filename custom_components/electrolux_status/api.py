@@ -1,6 +1,12 @@
 import logging
 
-from homeassistant.components.binary_sensor import DEVICE_CLASS_CONNECTIVITY
+from homeassistant.components.binary_sensor import (
+    DEVICE_CLASS_CONNECTIVITY,
+    DEVICE_CLASS_DOOR,
+    DEVICE_CLASS_LOCK,
+)
+from homeassistant.components.sensor import SensorDeviceClass
+from homeassistant.helpers.entity import EntityCategory
 
 from .const import BINARY_SENSOR, SENSOR
 from homeassistant.const import TIME_SECONDS
@@ -18,12 +24,14 @@ class ElectroluxLibraryEntity:
     def get_name(self):
         return self.name
 
-    def get_value(self, attr_name):
+    def get_value(self, attr_name, field=None):
         if attr_name in self.status:
             return self.status.get(attr_name)
         if attr_name in [self.profiles[k].get("name") for k in self.profiles]:
             for k in self.profiles:
                 if attr_name == self.profiles[k].get("name"):
+                    if field and field in self.profiles[k].keys():
+                        return self.profiles[k].get(field)
                     if "stringValue" in self.profiles[k].keys():
                         return self.profiles[k].get("stringValue")
                     if "numberValue" in self.profiles[k].keys():
@@ -37,14 +45,16 @@ class ElectroluxLibraryEntity:
 class ApplianceEntity:
     entity_type: int = None
 
-    def __init__(self, name, attr, device_class=None) -> None:
+    def __init__(self, name, attr, device_class=None, entity_category=None, field=None) -> None:
         self.attr = attr
         self.name = name
         self.device_class = device_class
+        self.entity_category = entity_category
+        self.field = field
         self._state = None
 
     def setup(self, data: ElectroluxLibraryEntity):
-        self._state = data.get_value(self.attr)
+        self._state = data.get_value(self.attr, self.field)
         return self
 
     def clear_state(self):
@@ -58,21 +68,22 @@ class ApplianceEntity:
 class ApplianceSensor(ApplianceEntity):
     entity_type: int = SENSOR
 
-    def __init__(self, name, attr, unit="", device_class=None) -> None:
-        super().__init__(name, attr, device_class)
+    def __init__(self, name, attr, unit="", device_class=None, entity_category=None, field=None) -> None:
+        super().__init__(name, attr, device_class, entity_category, field)
         self.unit = unit
 
 
 class ApplianceBinary(ApplianceEntity):
     entity_type: int = BINARY_SENSOR
 
-    def __init__(self, name, attr, device_class=None) -> None:
-        super().__init__(name, attr, device_class)
+    def __init__(self, name, attr, device_class=None, entity_category=None, field=None, invert=False) -> None:
+        super().__init__(name, attr, device_class, entity_category, field)
+        self.invert = invert
 
     @property
     def state(self):
-        return self._state in ['enabled', True, 'Connected', 'connect']
-
+        state = self._state in [1, 'enabled', True, 'Connected', 'connect']
+        return not state if self.invert else state
 
 class Appliance:
     serialNumber: str
@@ -94,11 +105,34 @@ class Appliance:
         )
 
     def setup(self, data: ElectroluxLibraryEntity):
-        dryer_entities = [
+        entities = [
             ApplianceBinary(
                 name=data.get_name(),
                 attr='status',
-                device_class=DEVICE_CLASS_CONNECTIVITY
+                device_class=DEVICE_CLASS_CONNECTIVITY,
+                entity_category=EntityCategory.DIAGNOSTIC,
+            ),
+            ApplianceSensor(
+                name=f"{data.get_name()} SSID",
+                attr='Ssid',
+                entity_category=EntityCategory.DIAGNOSTIC,
+            ),
+            ApplianceSensor(
+                name=f"{data.get_name()} Signal Strength",
+                attr='LinkQualityIndicator',
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                entity_category=EntityCategory.DIAGNOSTIC,
+            ),
+            ApplianceBinary(
+                name=f"{data.get_name()} Door Locked",
+                attr='DoorLock', field='numberValue',
+                device_class=DEVICE_CLASS_LOCK,
+                invert=True,
+            ),
+            ApplianceBinary(
+                name=f"{data.get_name()} Door Open",
+                attr='DoorState', field='numberValue',
+                device_class=DEVICE_CLASS_DOOR,
             ),
             ApplianceSensor(
                 name=f"{data.get_name()} Time To End",
@@ -107,12 +141,12 @@ class Appliance:
             ),
             ApplianceSensor(
                 name=f"{data.get_name()} Cycle Phase",
-                attr='CyclePhase'
+                attr='CyclePhase',
             )
         ]
         self.entities = [
             entity.setup(data)
-            for entity in dryer_entities if data.value_exists(entity.attr)
+            for entity in entities if data.value_exists(entity.attr)
         ]
 
 
