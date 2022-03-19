@@ -9,7 +9,9 @@ Tested with Electrolux and AEG washer-dryer, but probably could be used with som
 
 ### Supported and tested devices
 
+- ELECTROLUX EDH803BEWA - UltimateCare 800
 - ELECTROLUX EW9H283BY - PerfectCare 900
+- ELECTROLUX EWF1041ZDWA - UltimateCare 900 AutoDose
 - AEG L6FBG841CA - 6000 Series Autodose
 
 ## Prerequisites
