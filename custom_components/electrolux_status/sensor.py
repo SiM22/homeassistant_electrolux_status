@@ -12,7 +12,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
     appliances = coordinator.data.get('appliances', None)
 
     if appliances is not None:
-        for appliance_id, appliance in appliances.appliances.items():
+        for appliance_id, appliance in appliances.found_appliances.items():
             async_add_devices(
                 [
                     ElectroluxStatusSensor(coordinator, entry, appliance_id, entity.entity_type, entity.attr)
