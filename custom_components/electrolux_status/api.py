@@ -10,6 +10,7 @@ from homeassistant.helpers.entity import EntityCategory
 
 from .const import BINARY_SENSOR, SENSOR
 from homeassistant.const import TIME_SECONDS
+
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 HEADERS = {"Content-type": "application/json; charset=UTF-8"}
@@ -85,6 +86,7 @@ class ApplianceBinary(ApplianceEntity):
         state = self._state in [1, 'enabled', True, 'Connected', 'connect']
         return not state if self.invert else state
 
+
 class Appliance:
     serialNumber: str
     brand: str
@@ -151,8 +153,8 @@ class Appliance:
 
 
 class Appliances:
-    def __init__(self, appliances) -> None:
-        self.appliances = appliances
+    def __init__(self, found_appliances) -> None:
+        self.appliances = found_appliances
 
     def get_appliance(self, pnc_id):
         return self.appliances.get(pnc_id, None)
