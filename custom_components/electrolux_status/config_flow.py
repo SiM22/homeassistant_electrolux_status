@@ -85,7 +85,6 @@ class ElectroluxStatusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             return True
         except Exception as inst:  # pylint: disable=broad-except
             _LOGGER.exception(inst)
-            pass
         return False
 
 
