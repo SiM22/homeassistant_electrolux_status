@@ -34,7 +34,9 @@ class ElectroluxStatusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             valid = await self._test_credentials(
-                user_input[CONF_USERNAME], user_input[CONF_PASSWORD], user_input[CONF_REGION]
+                user_input[CONF_USERNAME],
+                user_input[CONF_PASSWORD],
+                user_input[CONF_REGION],
             )
             if valid:
                 return self.async_create_entry(
@@ -56,19 +58,22 @@ class ElectroluxStatusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Show the configuration form to edit location data."""
         data_schema = {
             vol.Required(CONF_USERNAME): str,
-            vol.Required(CONF_PASSWORD): str
+            vol.Required(CONF_PASSWORD): str,
+            vol.Optional(CONF_REGION, default="EMEA"): vol.In(
+                ["APAC", "EMEA", "LATAM", "NA", "Frigidaire"]
+            ),
         }
         if self.show_advanced_options:
             data_schema = {
                 vol.Required(CONF_USERNAME): str,
                 vol.Required(CONF_PASSWORD): str,
-                vol.Optional(CONF_REGION, default="emea"): str
+                vol.Optional(CONF_REGION, default="EMEA"): vol.In(
+                    ["APAC", "EMEA", "LATAM", "NA", "Frigidaire"]
+                ),
             }
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema(
-                data_schema
-            ),
+            data_schema=vol.Schema(data_schema),
             errors=self._errors,
         )
 

@@ -5,7 +5,7 @@
   "documentation": "https://github.com/mauro-midolo/homeassistant_electrolux_status",
   "issue_tracker": "https://github.com/mauro-midolo/homeassistant_electrolux_status/issues",
   "requirements": [
-    "pyelectroluxconnect==0.1.9"
+    "pyelectroluxconnect==0.1.10"
   ],
   "ssdp": [],
   "zeroconf": [],
