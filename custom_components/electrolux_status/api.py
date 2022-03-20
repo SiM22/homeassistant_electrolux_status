@@ -44,7 +44,7 @@ class ElectroluxLibraryEntity:
 
 
 class ApplianceEntity:
-    entity_type: int = None
+    entity_type = None
 
     def __init__(self, name, attr, device_class=None, entity_category=None, field=None) -> None:
         self.attr = attr
@@ -67,7 +67,7 @@ class ApplianceEntity:
 
 
 class ApplianceSensor(ApplianceEntity):
-    entity_type: int = SENSOR
+    entity_type = SENSOR
 
     def __init__(self, name, attr, unit="", device_class=None, entity_category=None, field=None) -> None:
         super().__init__(name, attr, device_class, entity_category, field)
@@ -75,7 +75,7 @@ class ApplianceSensor(ApplianceEntity):
 
 
 class ApplianceBinary(ApplianceEntity):
-    entity_type: int = BINARY_SENSOR
+    entity_type = BINARY_SENSOR
 
     def __init__(self, name, attr, device_class=None, entity_category=None, field=None, invert=False) -> None:
         super().__init__(name, attr, device_class, entity_category, field)
