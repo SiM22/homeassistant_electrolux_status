@@ -29,14 +29,18 @@ class ElectroluxLibraryEntity:
         if attr_name in self.status:
             return self.status.get(attr_name)
         if attr_name in [self.profiles[k].get("name") for k in self.profiles]:
-            for k in self.profiles:
-                if attr_name == self.profiles[k].get("name"):
-                    if field and field in self.profiles[k].keys():
-                        return self.profiles[k].get(field)
-                    if "stringValue" in self.profiles[k].keys():
-                        return self.profiles[k].get("stringValue")
-                    if "numberValue" in self.profiles[k].keys():
-                        return self.profiles[k].get("numberValue")
+            return self.get_from_profiles(attr_name, field)
+        return None
+
+    def get_from_profiles(self, attr_name, field):
+        for k in self.profiles:
+            if attr_name == self.profiles[k].get("name"):
+                if field and field in self.profiles[k].keys():
+                    return self.profiles[k].get(field)
+                if "stringValue" in self.profiles[k].keys():
+                    return self.profiles[k].get("stringValue")
+                if "numberValue" in self.profiles[k].keys():
+                    return self.profiles[k].get("numberValue")
         return None
 
     def value_exists(self, attr_name):
