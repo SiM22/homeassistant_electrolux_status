@@ -153,7 +153,7 @@ class Appliance:
 
 class Appliances:
     def __init__(self, found_appliances) -> None:
-        self.appliances = found_appliances
+        self.found_appliances = found_appliances
 
     def get_appliance(self, pnc_id):
-        return self.appliances.get(pnc_id, None)
+        return self.found_appliances.get(pnc_id, None)
