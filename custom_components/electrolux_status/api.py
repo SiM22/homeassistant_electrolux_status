@@ -88,7 +88,6 @@ class ApplianceBinary(ApplianceEntity):
 
 
 class Appliance:
-    serialNumber: str
     brand: str
     device: str
     entities: []
