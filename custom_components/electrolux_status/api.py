@@ -9,7 +9,7 @@ from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.helpers.entity import EntityCategory
 
 from .const import BINARY_SENSOR, SENSOR
-from homeassistant.const import TIME_SECONDS
+from homeassistant.const import TIME_MINUTES
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -26,10 +26,20 @@ class ElectroluxLibraryEntity:
         return self.name
 
     def get_value(self, attr_name, field=None):
+        if attr_name == 'TimeToEnd':
+            return self.time_to_end_in_minutes(attr_name, field)
         if attr_name in self.status:
             return self.status.get(attr_name)
         if attr_name in [self.profiles[k].get("name") for k in self.profiles]:
             return self.get_from_profiles(attr_name, field)
+        return None
+
+    def time_to_end_in_minutes(self, attr_name, field):
+        seconds = self.get_from_profiles(attr_name, field)
+        if seconds:
+            if seconds == -1:
+                return -1
+            return round((seconds / 60))
         return None
 
     def get_from_profiles(self, attr_name, field):
@@ -142,7 +152,7 @@ class Appliance:
             ApplianceSensor(
                 name=f"{data.get_name()} Time To End",
                 attr='TimeToEnd',
-                unit=TIME_SECONDS,
+                unit=TIME_MINUTES,
             ),
             ApplianceSensor(
                 name=f"{data.get_name()} Cycle Phase",
