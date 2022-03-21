@@ -1,4 +1,5 @@
 import logging
+import math
 
 from homeassistant.components.binary_sensor import (
     DEVICE_CLASS_CONNECTIVITY,
@@ -39,7 +40,7 @@ class ElectroluxLibraryEntity:
         if seconds:
             if seconds == -1:
                 return -1
-            return round((seconds / 60))
+            return int(math.ceil((seconds / 60)))
         return None
 
     def get_from_profiles(self, attr_name, field):
