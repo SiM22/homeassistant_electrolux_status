@@ -84,7 +84,7 @@ class ApplianceEntity:
 class ApplianceSensor(ApplianceEntity):
     entity_type = SENSOR
 
-    def __init__(self, name, attr, unit="", device_class=None, entity_category=None, field=None) -> None:
+    def __init__(self, name, attr, unit=None, device_class=None, entity_category=None, field=None) -> None:
         super().__init__(name, attr, device_class, entity_category, field)
         self.unit = unit
 
