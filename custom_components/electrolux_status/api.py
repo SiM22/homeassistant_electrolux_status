@@ -37,7 +37,7 @@ class ElectroluxLibraryEntity:
 
     def time_to_end_in_minutes(self, attr_name, field):
         seconds = self.get_from_profiles(attr_name, field)
-        if seconds:
+        if seconds is not None:
             if seconds == -1:
                 return -1
             return int(math.ceil((seconds / 60)))
