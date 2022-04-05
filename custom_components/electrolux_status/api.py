@@ -10,7 +10,7 @@ from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.helpers.entity import EntityCategory
 
 from .const import BINARY_SENSOR, SENSOR
-from homeassistant.const import TIME_MINUTES
+from homeassistant.const import TIME_MINUTES, TEMP_CELSIUS, PERCENTAGE
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -27,12 +27,17 @@ class ElectroluxLibraryEntity:
         return self.name
 
     def get_value(self, attr_name, field=None, source=None):
-        if attr_name == 'TimeToEnd':
+        if attr_name == 'TimeToEnd' or attr_name == 'RunningTime':
             return self.time_to_end_in_minutes(attr_name, field, source)
         if attr_name in self.status:
             return self.status.get(attr_name)
         if attr_name in [self.profiles[k].get("name") for k in self.profiles]:
-            return self.get_from_profiles(attr_name, field, source)
+            val = self.get_from_profiles(attr_name, field, source)
+            if field == "container":
+                if val["1"]["name"] == "Coefficient" and val["3"]["name"] == "Exponent":
+                    return val["1"]["numberValue"]*(10**val["3"]["numberValue"])
+            else:
+                return val
         return None
 
     def time_to_end_in_minutes(self, attr_name, field, source):
@@ -186,6 +191,69 @@ class Appliance:
                     source=src,
                 )
             )
+            entities.append(
+                ApplianceSensor(
+                    name=f"{data.get_name()} Appliance State{suffix}",
+                    attr='ApplianceState',
+                    source=src,
+                )
+            )
+            entities.append(
+                ApplianceSensor(
+                    name=f"{data.get_name()} Temperature{suffix}",
+                    attr='DisplayTemperature', field='container',
+                    device_class=SensorDeviceClass.TEMPERATURE,
+                    unit=TEMP_CELSIUS,
+                    source=src,
+                )
+            )
+            entities.append(
+                ApplianceSensor(
+                    name=f"{data.get_name()} Food Probe Temperature{suffix}",
+                    attr='DisplayFoodProbeTemperature', field='container',
+                    device_class=SensorDeviceClass.TEMPERATURE,
+                    unit=TEMP_CELSIUS,
+                    source=src,
+                )
+            )
+            entities.append(
+                ApplianceSensor(
+                    name=f"{data.get_name()} Ambient Temperature{suffix}",
+                    attr='AmbientTemperature', field='container',
+                    device_class=SensorDeviceClass.TEMPERATURE,
+                    unit=TEMP_CELSIUS,
+                    entity_category=EntityCategory.DIAGNOSTIC,
+                    source=src,
+                )
+            )
+            entities.append(
+                ApplianceSensor(
+                    name=f"{data.get_name()} Sensor Temperature{suffix}",
+                    attr='SensorTemperature', field='container',
+                    device_class=SensorDeviceClass.TEMPERATURE,
+                    unit=TEMP_CELSIUS,
+                    source=src,
+                )
+            )
+            entities.append(
+                ApplianceSensor(
+                    name=f"{data.get_name()} Running Time{suffix}",
+                    attr='RunningTime',
+                    unit=TIME_MINUTES,
+                    source=src,
+                )
+            )
+            entities.append(
+                ApplianceSensor(
+                    name=f"{data.get_name()} Sensor Humidity{suffix}",
+                    attr='SensorHumidity', field='numberValue',
+                    device_class=SensorDeviceClass.HUMIDITY,
+                    unit=PERCENTAGE,
+                    entity_category=EntityCategory.DIAGNOSTIC,
+                    source=src,
+                )
+            )
+
 
         self.entities = [
             entity.setup(data)
