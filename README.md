@@ -19,10 +19,15 @@ Tested with Electrolux and AEG washer-dryer, but probably could be used with som
 - AEG L6FBG841CA - 6000 Series Autodose
 - AEG L7FENQ96 - 7000 Series ProSteam Autodose
 - AEG L8FEC96QS - 8000 Series Ökomix Autodose
+- AEG L9WBA61BC - 9000 Series ÖKOKombi DualSense SensiDry
 
 ## Prerequisites
-- All devices need configured into "My Electrolux Care" application
-- All devices need Alias set into "My Electrolux Care" application (otherwise the home assistant integration raises the authentication error)
+All devices need configured and Alias set (otherwise the home assistant integration raises the authentication error) into following applications (depends on device type and region):
+- My Electrolux Care/My AEG Care (EMEA region)
+- Electrolux Kitchen/AEG Kitchen (EMEA region)
+- Electrolux Life (APAC region)
+- Electrolux Home+ (LATAM region)
+- Electrolux Oven/Frigidaire 2.0 (NA region)
 
 ## Installation
 1. Click install.
