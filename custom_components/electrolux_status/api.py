@@ -164,10 +164,6 @@ class Appliance:
         ]
         sources = data.sources_list()
         for src in sources:
-            if len(sources) > 1:
-                suffix = f" ({src})"
-            else:
-                suffix = ""
             entities.append(
                 ApplianceBinary(
                     name=f"{data.get_name()} Door{data.get_suffix('DoorState',src)}",
