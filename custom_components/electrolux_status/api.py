@@ -66,6 +66,15 @@ class ElectroluxLibraryEntity:
         res = list({self.profiles[k].get("source") for k in self.profiles if self.profiles[k].get("source") not in ["NIU", "APL"]})
         return res
 
+    def get_suffix(self, attr_name, source):
+        res = list({self.profiles[k].get("source") for k in self.profiles if self.profiles[k].get("name") == attr_name})
+        if len(res) == 1:
+            return ""
+        else:
+            if source in res:
+                return f" ({source})"
+        return ""
+
 
 class ApplianceEntity:
     entity_type = None
@@ -161,7 +170,7 @@ class Appliance:
                 suffix = ""
             entities.append(
                 ApplianceBinary(
-                    name=f"{data.get_name()} Door{suffix}",
+                    name=f"{data.get_name()} Door{data.get_suffix('DoorState',src)}",
                     attr='DoorState', field='numberValue',
                     device_class=DEVICE_CLASS_DOOR,
                     source=src,
@@ -169,7 +178,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceBinary(
-                    name=f"{data.get_name()} Door Lock{suffix}",
+                    name=f"{data.get_name()} Door Lock{data.get_suffix('DoorLock',src)}",
                     attr='DoorLock', field='numberValue',
                     device_class=DEVICE_CLASS_LOCK,
                     invert=True,
@@ -178,7 +187,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Time To End{suffix}",
+                    name=f"{data.get_name()} Time To End{data.get_suffix('TimeToEnd',src)}",
                     attr='TimeToEnd',
                     unit=TIME_MINUTES,
                     source=src,
@@ -186,21 +195,21 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Cycle Phase{suffix}",
+                    name=f"{data.get_name()} Cycle Phase{data.get_suffix('CyclePhase',src)}",
                     attr='CyclePhase',
                     source=src,
                 )
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Appliance State{suffix}",
+                    name=f"{data.get_name()} Appliance State{data.get_suffix('ApplianceState',src)}",
                     attr='ApplianceState',
                     source=src,
                 )
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Temperature{suffix}",
+                    name=f"{data.get_name()} Temperature{data.get_suffix('DisplayTemperature',src)}",
                     attr='DisplayTemperature', field='container',
                     device_class=SensorDeviceClass.TEMPERATURE,
                     unit=TEMP_CELSIUS,
@@ -209,7 +218,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Food Probe Temperature{suffix}",
+                    name=f"{data.get_name()} Food Probe Temperature{data.get_suffix('DisplayFoodProbeTemperature',src)}",
                     attr='DisplayFoodProbeTemperature', field='container',
                     device_class=SensorDeviceClass.TEMPERATURE,
                     unit=TEMP_CELSIUS,
@@ -218,7 +227,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Ambient Temperature{suffix}",
+                    name=f"{data.get_name()} Ambient Temperature{data.get_suffix('AmbientTemperature',src)}",
                     attr='AmbientTemperature', field='container',
                     device_class=SensorDeviceClass.TEMPERATURE,
                     unit=TEMP_CELSIUS,
@@ -228,7 +237,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Sensor Temperature{suffix}",
+                    name=f"{data.get_name()} Sensor Temperature{data.get_suffix('SensorTemperature',src)}",
                     attr='SensorTemperature', field='container',
                     device_class=SensorDeviceClass.TEMPERATURE,
                     unit=TEMP_CELSIUS,
@@ -237,7 +246,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Running Time{suffix}",
+                    name=f"{data.get_name()} Running Time{data.get_suffix('RunningTime',src)}",
                     attr='RunningTime',
                     unit=TIME_MINUTES,
                     source=src,
@@ -245,7 +254,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Sensor Humidity{suffix}",
+                    name=f"{data.get_name()} Sensor Humidity{data.get_suffix('SensorHumidity',src)}",
                     attr='SensorHumidity', field='numberValue',
                     device_class=SensorDeviceClass.HUMIDITY,
                     unit=PERCENTAGE,
