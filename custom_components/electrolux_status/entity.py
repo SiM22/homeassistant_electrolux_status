@@ -7,14 +7,15 @@ from .const import DOMAIN
 
 
 class ElectroluxStatusEntity(CoordinatorEntity):
-    def __init__(self, coordinator: ElectroluxStatusDataUpdateCoordinator, config_entry, pnc_id, entity_type, entity_attr):
+    def __init__(self, coordinator: ElectroluxStatusDataUpdateCoordinator, config_entry, pnc_id, entity_type, entity_attr, entity_source):
         super().__init__(coordinator)
         self.api = coordinator.api
         self.entity_attr = entity_attr
         self.entity_type = entity_type
+        self.entity_source = entity_source
         self.config_entry = config_entry
         self.pnc_id = pnc_id
-        self.entity_id = ENTITY_ID_FORMAT.format(f"{self.get_appliance.brand}_{self.get_appliance.name}_{self.entity_attr}")
+        self.entity_id = ENTITY_ID_FORMAT.format(f"{self.get_appliance.brand}_{self.get_appliance.name}_{self.entity_source}_{self.entity_attr}")
 
     @property
     def name(self):
@@ -23,7 +24,7 @@ class ElectroluxStatusEntity(CoordinatorEntity):
 
     @property
     def get_entity(self) -> ApplianceEntity:
-        return self.get_appliance.get_entity(self.entity_type, self.entity_attr)
+        return self.get_appliance.get_entity(self.entity_type, self.entity_attr, self.entity_source)
 
     @property
     def get_appliance(self) -> Appliance:
@@ -32,7 +33,7 @@ class ElectroluxStatusEntity(CoordinatorEntity):
     @property
     def unique_id(self):
         """Return a unique ID to use for this entity."""
-        return f"{self.config_entry.entry_id}-{self.entity_attr}-{self.pnc_id}"
+        return f"{self.config_entry.entry_id}-{self.entity_attr}-{self.entity_source}-{self.pnc_id}"
 
     @property
     def device_info(self):
