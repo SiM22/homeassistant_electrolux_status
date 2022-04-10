@@ -7,9 +7,10 @@ from homeassistant.components.binary_sensor import (
     DEVICE_CLASS_LOCK,
 )
 from homeassistant.components.sensor import SensorDeviceClass
+from homeassistant.components.button import ButtonDeviceClass
 from homeassistant.helpers.entity import EntityCategory
 
-from .const import BINARY_SENSOR, SENSOR
+from .const import BINARY_SENSOR, SENSOR, BUTTON, icon_mapping
 from homeassistant.const import TIME_MINUTES, TEMP_CELSIUS, PERCENTAGE
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -18,10 +19,11 @@ HEADERS = {"Content-type": "application/json; charset=UTF-8"}
 
 
 class ElectroluxLibraryEntity:
-    def __init__(self, name, status, profiles):
+    def __init__(self, name, status, last_states, appliance_profile):
         self.name = name
         self.status: dict = status
-        self.profiles = profiles
+        self.states = last_states
+        self.profile = appliance_profile
 
     def get_name(self):
         return self.name
@@ -31,8 +33,8 @@ class ElectroluxLibraryEntity:
             return self.time_to_end_in_minutes(attr_name, field, source)
         if attr_name in self.status:
             return self.status.get(attr_name)
-        if attr_name in [self.profiles[k].get("name") for k in self.profiles]:
-            val = self.get_from_profiles(attr_name, field, source)
+        if attr_name in [self.states[k].get("name") for k in self.states]:
+            val = self.get_from_states(attr_name, field, source)
             if field == "container":
                 if val["1"]["name"] == "Coefficient" and val["3"]["name"] == "Exponent":
                     return val["1"]["numberValue"]*(10**val["3"]["numberValue"])
@@ -41,33 +43,35 @@ class ElectroluxLibraryEntity:
         return None
 
     def time_to_end_in_minutes(self, attr_name, field, source):
-        seconds = self.get_from_profiles(attr_name, field, source)
+        seconds = self.get_from_states(attr_name, field, source)
         if seconds is not None:
             if seconds == -1:
                 return -1
             return int(math.ceil((seconds / 60)))
         return None
 
-    def get_from_profiles(self, attr_name, field, source):
-        for k in self.profiles:
-            if attr_name == self.profiles[k].get("name") and source == self.profiles[k].get("source"):
-                if field and field in self.profiles[k].keys():
-                    return self.profiles[k].get(field)
-                if "stringValue" in self.profiles[k].keys():
-                    return self.profiles[k].get("stringValue")
-                if "numberValue" in self.profiles[k].keys():
-                    return self.profiles[k].get("numberValue")
+    def get_from_states(self, attr_name, field, source):
+        for k in self.states:
+            if attr_name == self.states[k].get("name") and source == self.states[k].get("source"):
+                if field and field in self.states[k].keys():
+                    return self.states[k].get(field)
+                if "stringValue" in self.states[k].keys():
+                    return self.states[k].get("stringValue")
+                if "numberValue" in self.states[k].keys():
+                    return self.states[k].get("numberValue")
         return None
 
     def value_exists(self, attr_name, source):
-        return (attr_name in self.status) or (attr_name in [self.profiles[k].get("name") for k in self.profiles if self.profiles[k].get("source") == source])
+        return (attr_name in self.status) or (attr_name in [self.states[k].get("name") for k in self.states if self.states[k].get("source") == source]) or (attr_name in [self.profile[k].get("name") for k in self.profile if self.profile[k].get("source") == source])
 
     def sources_list(self):
-        res = list({self.profiles[k].get("source") for k in self.profiles if self.profiles[k].get("source") not in ["NIU", "APL"]})
-        return res
+        return list({self.states[k].get("source") for k in self.states if self.states[k].get("source") not in ["NIU", "APL"]})
+
+    def commands_list(self, source):
+        return list([self.profile[k].get("steps") for k in self.profile if self.profile[k].get("source") == source and self.profile[k].get("name") == "ExecuteCommand"])[0]
 
     def get_suffix(self, attr_name, source):
-        res = list({self.profiles[k].get("source") for k in self.profiles if self.profiles[k].get("name") == attr_name})
+        res = list({self.states[k].get("source") for k in self.states if self.states[k].get("name") == attr_name})
         if len(res) == 1:
             return ""
         else:
@@ -86,6 +90,8 @@ class ApplianceEntity:
         self.entity_category = entity_category
         self.field = field
         self.source = source
+        self.val_to_send = None
+        self.icon = None
         self._state = None
 
     def setup(self, data: ElectroluxLibraryEntity):
@@ -95,10 +101,6 @@ class ApplianceEntity:
     def clear_state(self):
         self._state = None
 
-    @property
-    def state(self):
-        return self._state
-
 
 class ApplianceSensor(ApplianceEntity):
     entity_type = SENSOR
@@ -106,6 +108,10 @@ class ApplianceSensor(ApplianceEntity):
     def __init__(self, name, attr, unit=None, device_class=None, entity_category=None, field=None, source=None) -> None:
         super().__init__(name, attr, device_class, entity_category, field, source)
         self.unit = unit
+
+    @property
+    def state(self):
+        return self._state
 
 
 class ApplianceBinary(ApplianceEntity):
@@ -121,6 +127,18 @@ class ApplianceBinary(ApplianceEntity):
         return not state if self.invert else state
 
 
+class ApplianceButton(ApplianceEntity):
+    entity_type = BUTTON
+
+    def __init__(self, name, attr, unit=None, device_class=None, entity_category=None, source=None, val_to_send=None, icon=None) -> None:
+        super().__init__(name, attr, device_class, entity_category, None, source)
+        self.val_to_send = val_to_send
+        self.icon = icon
+
+    def setup(self, data: ElectroluxLibraryEntity):
+        return self
+
+
 class Appliance:
     brand: str
     device: str
@@ -132,11 +150,11 @@ class Appliance:
         self.name = name
         self.brand = brand
 
-    def get_entity(self, entity_type, entity_attr, entity_source):
+    def get_entity(self, entity_type, entity_attr, entity_source, val_to_send):
         return next(
             entity
             for entity in self.entities
-            if entity.attr == entity_attr and entity.entity_type == entity_type and entity.source == entity_source
+            if entity.attr == entity_attr and entity.entity_type == entity_type and entity.source == entity_source and entity.val_to_send == val_to_send
         )
 
     def setup(self, data: ElectroluxLibraryEntity):
@@ -258,7 +276,17 @@ class Appliance:
                     source=src,
                 )
             )
-
+            for command in data.commands_list(src):
+                for key in command:
+                    entities.append(
+                        ApplianceButton(
+                            name=f"{data.get_name()} {command[key]}{data.get_suffix('ExecuteCommand',src)}",
+                            attr='ExecuteCommand',
+                            val_to_send=key,
+                            source=src,
+                            icon=icon_mapping.get(command[key], "mdi:gesture-tap-button")
+                        )
+                    )
 
         self.entities = [
             entity.setup(data)
