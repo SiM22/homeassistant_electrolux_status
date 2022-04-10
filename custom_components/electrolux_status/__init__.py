@@ -89,10 +89,11 @@ class ElectroluxStatusDataUpdateCoordinator(DataUpdateCoordinator):
             for appliance in appliances_json:
                 connection_state = await self.hass.async_add_executor_job(self.api.getApplianceConnectionState, appliance)
                 appliance_state = await self.hass.async_add_executor_job(self.api.getApplianceState, appliance)
+                appliance_profile = await self.hass.async_add_executor_job(self.api.getApplianceProfile, appliance)
                 appliance_name = appliances_json[appliance]['alias'] or appliance
                 appliance_model = appliances_json[appliance]['model'] or appliances_json[appliance]['pnc']
                 app = Appliance(appliance_name, appliance, appliances_json[appliance]['brand'], appliance_model)
-                app.setup(ElectroluxLibraryEntity(appliance_name, connection_state, appliance_state))
+                app.setup(ElectroluxLibraryEntity(appliance_name, connection_state, appliance_state, appliance_profile))
                 found_appliances[appliance_name] = app
             return {
                 "appliances": Appliances(found_appliances)
