@@ -68,7 +68,11 @@ class ElectroluxLibraryEntity:
         return list({self.states[k].get("source") for k in self.states if self.states[k].get("source") not in ["NIU", "APL"]})
 
     def commands_list(self, source):
-        return list([self.profile[k].get("steps") for k in self.profile if self.profile[k].get("source") == source and self.profile[k].get("name") == "ExecuteCommand"])[0]
+        commands = list([self.profile[k].get("steps") for k in self.profile if self.profile[k].get("source") == source and self.profile[k].get("name") == "ExecuteCommand"])
+        if len(commands):
+            return commands[0]
+        else:
+            return []
 
     def get_suffix(self, attr_name, source):
         res = list({self.states[k].get("source") for k in self.states if self.states[k].get("name") == attr_name})
