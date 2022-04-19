@@ -264,6 +264,24 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
+                    name=f"{data.get_name()} Target Temperature{data.get_suffix('TargetTemperature',src)}",
+                    attr='TargetTemperature', field='container',
+                    device_class=SensorDeviceClass.TEMPERATURE,
+                    unit=TEMP_CELSIUS,
+                    source=src,
+                )
+            )
+            entities.append(
+                ApplianceSensor(
+                    name=f"{data.get_name()} Defrost Temperature{data.get_suffix('DefrostTemperature',src)}",
+                    attr='DefrostTemperature', field='container',
+                    device_class=SensorDeviceClass.TEMPERATURE,
+                    unit=TEMP_CELSIUS,
+                    source=src,
+                )
+            )
+            entities.append(
+                ApplianceSensor(
                     name=f"{data.get_name()} Running Time{data.get_suffix('RunningTime',src)}",
                     attr='RunningTime',
                     unit=TIME_MINUTES,
