@@ -19,6 +19,8 @@ Tested with Electrolux and AEG washer-dryer, but probably could be used with som
 - ELECTROLUX EEM69410W - MaxiFlex 700
 - ELECTROLUX EOD6P77WZ - SteamBake 600
 - ELECTROLUX EHE6799SA - 609L UltimateTaste 900
+- ELECTROLUX EW9H869E9 - PerfectCare 900 Dryer
+- ELECTROLUX EW8F8669Q8 - PerfectCare 800 Washer
 - AEG L6FBG841CA - 6000 Series Autodose
 - AEG L7FENQ96 - 7000 Series ProSteam Autodose
 - AEG L7FBE941Q - 7000 Series Prosense Autodose
