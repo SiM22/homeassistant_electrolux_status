@@ -227,6 +227,13 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
+                    name=f"{data.get_name()} Remote Control{data.get_suffix('RemoteControl',src)}",
+                    attr='RemoteControl',
+                    source=src,
+                )
+            )
+            entities.append(
+                ApplianceSensor(
                     name=f"{data.get_name()} Temperature{data.get_suffix('DisplayTemperature',src)}",
                     attr='DisplayTemperature', field='container',
                     device_class=SensorDeviceClass.TEMPERATURE,
