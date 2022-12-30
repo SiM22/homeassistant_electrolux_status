@@ -53,12 +53,31 @@ class ElectroluxLibraryEntity:
     def get_from_states(self, attr_name, field, source):
         for k in self.states:
             if attr_name == self.states[k].get("name") and source == self.states[k].get("source"):
-                if field and field in self.states[k].keys():
-                    return self.states[k].get(field)
-                if "stringValue" in self.states[k].keys():
-                    return self.states[k].get("stringValue")
-                if "numberValue" in self.states[k].keys():
-                    return self.states[k].get("numberValue")
+                if field:
+                    if field in self.states[k].keys():
+                        return self.states[k].get(field)
+                    if field == "string":
+                        if "valueTransl" in self.states[k].keys():
+                            return self.states[k].get("valueTransl").strip(" :.")
+                        if "stringValue" in self.states[k].keys():
+                            return self.states[k].get("stringValue").strip(" :.")
+                        return ""
+                else:
+                    if "valueTransl" in self.states[k].keys():
+                        return self.states[k].get("valueTransl").strip(" :.")
+                    if "stringValue" in self.states[k].keys():
+                        return self.states[k].get("stringValue").strip(" :.")
+                    if "numberValue" in self.states[k].keys():
+                        return self.states[k].get("numberValue")
+        return None
+
+    def get_sensor_name(self, attr_name, source):
+        for k in self.states:
+            if attr_name == self.states[k].get("name") and source == self.states[k].get("source"):
+                if "nameTransl" in self.states[k].keys():
+                    return self.states[k].get("nameTransl").strip(" :.")
+                else:
+                    return self.states[k].get("name").strip(" :.")
         return None
 
     def value_exists(self, attr_name, source):
@@ -69,7 +88,7 @@ class ElectroluxLibraryEntity:
 
     def commands_list(self, source):
         commands = list([self.profile[k].get("steps") for k in self.profile if self.profile[k].get("source") == source and self.profile[k].get("name") == "ExecuteCommand"])
-        if len(commands):
+        if len(commands) > 0:
             return commands[0]
         else:
             return []
@@ -177,7 +196,7 @@ class Appliance:
                 source='NIU',
             ),
             ApplianceSensor(
-                name=f"{data.get_name()} Signal Strength",
+                name=f"{data.get_name()} {data.get_sensor_name('LinkQualityIndicator','NIU')}",
                 attr='LinkQualityIndicator',
                 device_class=SensorDeviceClass.SIGNAL_STRENGTH,
                 entity_category=EntityCategory.DIAGNOSTIC,
@@ -188,7 +207,7 @@ class Appliance:
         for src in sources:
             entities.append(
                 ApplianceBinary(
-                    name=f"{data.get_name()} Door{data.get_suffix('DoorState',src)}",
+                    name=f"{data.get_name()} {data.get_sensor_name('DoorState',src)}{data.get_suffix('DoorState',src)}",
                     attr='DoorState', field='numberValue',
                     device_class=DEVICE_CLASS_DOOR,
                     source=src,
@@ -196,7 +215,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceBinary(
-                    name=f"{data.get_name()} Door Lock{data.get_suffix('DoorLock',src)}",
+                    name=f"{data.get_name()} {data.get_sensor_name('DoorLock',src)}{data.get_suffix('DoorLock',src)}",
                     attr='DoorLock', field='numberValue',
                     device_class=DEVICE_CLASS_LOCK,
                     invert=True,
@@ -205,7 +224,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Time To End{data.get_suffix('TimeToEnd',src)}",
+                    name=f"{data.get_name()} {data.get_sensor_name('TimeToEnd',src)}{data.get_suffix('TimeToEnd',src)}",
                     attr='TimeToEnd',
                     unit=TIME_MINUTES,
                     source=src,
@@ -213,28 +232,35 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Cycle Phase{data.get_suffix('CyclePhase',src)}",
+                    name=f"{data.get_name()} {data.get_sensor_name('CyclePhase',src)}{data.get_suffix('CyclePhase',src)}",
                     attr='CyclePhase',
                     source=src,
                 )
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Appliance State{data.get_suffix('ApplianceState',src)}",
+                    name=f"{data.get_name()} {data.get_sensor_name('CycleSubPhase',src)}{data.get_suffix('CycleSubPhase',src)}",
+                    attr='CycleSubPhase', field = 'string',
+                    source=src,
+                )
+            )
+            entities.append(
+                ApplianceSensor(
+                    name=f"{data.get_name()} {data.get_sensor_name('ApplianceState',src)}{data.get_suffix('ApplianceState',src)}",
                     attr='ApplianceState',
                     source=src,
                 )
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Remote Control{data.get_suffix('RemoteControl',src)}",
+                    name=f"{data.get_name()} {data.get_sensor_name('RemoteControl',src)}{data.get_suffix('RemoteControl',src)}",
                     attr='RemoteControl',
                     source=src,
                 )
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Temperature{data.get_suffix('DisplayTemperature',src)}",
+                    name=f"{data.get_name()} {data.get_sensor_name('DisplayTemperature',src)}{data.get_suffix('DisplayTemperature',src)}",
                     attr='DisplayTemperature', field='container',
                     device_class=SensorDeviceClass.TEMPERATURE,
                     unit=TEMP_CELSIUS,
@@ -243,7 +269,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Food Probe Temperature{data.get_suffix('DisplayFoodProbeTemperature',src)}",
+                    name=f"{data.get_name()} {data.get_sensor_name('DisplayFoodProbeTemperature',src)}{data.get_suffix('DisplayFoodProbeTemperature',src)}",
                     attr='DisplayFoodProbeTemperature', field='container',
                     device_class=SensorDeviceClass.TEMPERATURE,
                     unit=TEMP_CELSIUS,
@@ -252,7 +278,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Ambient Temperature{data.get_suffix('AmbientTemperature',src)}",
+                    name=f"{data.get_name()} {data.get_sensor_name('AmbientTemperature',src)}{data.get_suffix('AmbientTemperature',src)}",
                     attr='AmbientTemperature', field='container',
                     device_class=SensorDeviceClass.TEMPERATURE,
                     unit=TEMP_CELSIUS,
@@ -262,7 +288,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Sensor Temperature{data.get_suffix('SensorTemperature',src)}",
+                    name=f"{data.get_name()} {data.get_sensor_name('SensorTemperature',src)}{data.get_suffix('SensorTemperature',src)}",
                     attr='SensorTemperature', field='container',
                     device_class=SensorDeviceClass.TEMPERATURE,
                     unit=TEMP_CELSIUS,
@@ -271,7 +297,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Target Temperature{data.get_suffix('TargetTemperature',src)}",
+                    name=f"{data.get_name()} {data.get_sensor_name('TargetTemperature',src)}{data.get_suffix('TargetTemperature',src)}",
                     attr='TargetTemperature', field='container',
                     device_class=SensorDeviceClass.TEMPERATURE,
                     unit=TEMP_CELSIUS,
@@ -280,7 +306,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Defrost Temperature{data.get_suffix('DefrostTemperature',src)}",
+                    name=f"{data.get_name()} {data.get_sensor_name('DefrostTemperature',src)}{data.get_suffix('DefrostTemperature',src)}",
                     attr='DefrostTemperature', field='container',
                     device_class=SensorDeviceClass.TEMPERATURE,
                     unit=TEMP_CELSIUS,
@@ -289,7 +315,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Running Time{data.get_suffix('RunningTime',src)}",
+                    name=f"{data.get_name()} {data.get_sensor_name('RunningTime',src)}{data.get_suffix('RunningTime',src)}",
                     attr='RunningTime',
                     unit=TIME_MINUTES,
                     source=src,
@@ -297,7 +323,7 @@ class Appliance:
             )
             entities.append(
                 ApplianceSensor(
-                    name=f"{data.get_name()} Sensor Humidity{data.get_suffix('SensorHumidity',src)}",
+                    name=f"{data.get_name()} {data.get_sensor_name('SensorHumidity',src)}{data.get_suffix('SensorHumidity',src)}",
                     attr='SensorHumidity', field='numberValue',
                     device_class=SensorDeviceClass.HUMIDITY,
                     unit=PERCENTAGE,
@@ -313,7 +339,7 @@ class Appliance:
                             attr='ExecuteCommand',
                             val_to_send=key,
                             source=src,
-                            icon=icon_mapping.get(command[key], "mdi:gesture-tap-button")
+                            icon=icon_mapping.get(key, "mdi:gesture-tap-button"),
                         )
                     )
 

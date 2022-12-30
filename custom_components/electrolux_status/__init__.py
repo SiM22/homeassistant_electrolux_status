@@ -15,9 +15,11 @@ from homeassistant.helpers.update_coordinator import UpdateFailed
 from .pyelectroluxconnect_util import pyelectroluxconnect_util
 from .api import Appliance, Appliances, ElectroluxLibraryEntity
 from .const import CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, CONF_REGION, DEFAULT_REGION
+from .const import CONF_LANGUAGE, DEFAULT_LANGUAGE
 from .const import CONF_USERNAME
 from .const import DOMAIN
 from .const import PLATFORMS
+from .const import languages
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -41,8 +43,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
     region = entry.data.get(CONF_REGION, DEFAULT_REGION)
+    language = languages.get(entry.data.get(CONF_LANGUAGE, DEFAULT_LANGUAGE),"eng")
 
-    client = pyelectroluxconnect_util.get_session(username, password, region)
+    client = pyelectroluxconnect_util.get_session(username, password, region, language)
 
     coordinator = ElectroluxStatusDataUpdateCoordinator(hass, client=client, update_interval=update_interval)
     if not await coordinator.async_login():
@@ -99,6 +102,7 @@ class ElectroluxStatusDataUpdateCoordinator(DataUpdateCoordinator):
                 "appliances": Appliances(found_appliances)
             }
         except Exception as exception:
+            _LOGGER.exception(exception)
             raise UpdateFailed() from exception
 
 
