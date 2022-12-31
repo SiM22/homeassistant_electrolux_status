@@ -2,14 +2,17 @@
 import logging
 
 import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers.selector import selector
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 
 from .pyelectroluxconnect_util import pyelectroluxconnect_util
 from .const import CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, CONF_REGION
+from .const import CONF_LANGUAGE, DEFAULT_LANGUAGE
 from .const import CONF_USERNAME
 from .const import DOMAIN
+from .const import languages
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -59,17 +62,32 @@ class ElectroluxStatusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         data_schema = {
             vol.Required(CONF_USERNAME): str,
             vol.Required(CONF_PASSWORD): str,
-            vol.Optional(CONF_REGION, default="EMEA"): vol.In(
-                ["APAC", "EMEA", "LATAM", "NA", "Frigidaire"]
-            ),
+            vol.Optional(CONF_REGION, default="EMEA"): selector({
+                    "select": {
+                        "options": ["APAC", "EMEA", "LATAM", "NA", "Frigidaire"],
+                        "mode": "dropdown",
+                }
+                }),
+                vol.Optional(CONF_LANGUAGE, default = DEFAULT_LANGUAGE): selector({
+                    "select": {
+                        "options": list(languages.keys()),
+                        "mode": "dropdown"}
+                }),
         }
         if self.show_advanced_options:
             data_schema = {
                 vol.Required(CONF_USERNAME): str,
                 vol.Required(CONF_PASSWORD): str,
-                vol.Optional(CONF_REGION, default="EMEA"): vol.In(
-                    ["APAC", "EMEA", "LATAM", "NA", "Frigidaire"]
-                ),
+                vol.Optional(CONF_REGION, default="EMEA"): selector({
+                    "select": {
+                        "options": ["APAC", "EMEA", "LATAM", "NA", "Frigidaire"],
+                        "mode": "dropdown"}
+                }),
+                vol.Optional(CONF_LANGUAGE, default = DEFAULT_LANGUAGE): selector({
+                    "select": {
+                        "options": list(languages.keys()),
+                        "mode": "dropdown"}
+                }),
             }
         return self.async_show_form(
             step_id="user",
