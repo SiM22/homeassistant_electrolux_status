@@ -11,6 +11,7 @@ from homeassistant.components.button import ButtonDeviceClass
 from homeassistant.helpers.entity import EntityCategory
 
 from .const import BINARY_SENSOR, SENSOR, BUTTON, icon_mapping
+from .const import sensors, sensors_diagnostic, sensors_binary
 from homeassistant.const import TIME_MINUTES, TEMP_CELSIUS, PERCENTAGE
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -205,132 +206,39 @@ class Appliance:
         ]
         sources = data.sources_list()
         for src in sources:
-            entities.append(
-                ApplianceBinary(
-                    name=f"{data.get_name()} {data.get_sensor_name('DoorState',src)}{data.get_suffix('DoorState',src)}",
-                    attr='DoorState', field='numberValue',
-                    device_class=DEVICE_CLASS_DOOR,
-                    source=src,
+            for sensorName, params in sensors.items():
+                entities.append(
+                    ApplianceSensor(
+                        name=f"{data.get_name()} {data.get_sensor_name(sensorName,src)}{data.get_suffix(sensorName,src)}",
+                        attr=sensorName,
+                        field=params[0],
+                        device_class=params[1],
+                        unit=params[2],
+                        source=src,
+                    )
                 )
-            )
-            entities.append(
-                ApplianceBinary(
-                    name=f"{data.get_name()} {data.get_sensor_name('DoorLock',src)}{data.get_suffix('DoorLock',src)}",
-                    attr='DoorLock', field='numberValue',
-                    device_class=DEVICE_CLASS_LOCK,
-                    invert=True,
-                    source=src,
+            for sensorName, params in sensors_binary.items():
+                entities.append(
+                    ApplianceBinary(
+                        name=f"{data.get_name()} {data.get_sensor_name(sensorName,src)}{data.get_suffix(sensorName,src)}",
+                        attr=sensorName,
+                        field=params[0],
+                        device_class=params[1],
+                        invert=params[2],
+                        source=src,
+                    )
                 )
-            )
-            entities.append(
-                ApplianceSensor(
-                    name=f"{data.get_name()} {data.get_sensor_name('TimeToEnd',src)}{data.get_suffix('TimeToEnd',src)}",
-                    attr='TimeToEnd',
-                    unit=TIME_MINUTES,
-                    source=src,
+            for name, params in sensors_diagnostic.items():
+                entities.append(
+                    ApplianceSensor(
+                        name=f"{data.get_name()} {data.get_sensor_name(name,src)}{data.get_suffix(name,src)}",
+                        attr=name, field=params[0],
+                        device_class=params[1],
+                        unit=params[2],
+                        entity_category=EntityCategory.DIAGNOSTIC,
+                        source=src,
+                    )
                 )
-            )
-            entities.append(
-                ApplianceSensor(
-                    name=f"{data.get_name()} {data.get_sensor_name('CyclePhase',src)}{data.get_suffix('CyclePhase',src)}",
-                    attr='CyclePhase',
-                    source=src,
-                )
-            )
-            entities.append(
-                ApplianceSensor(
-                    name=f"{data.get_name()} {data.get_sensor_name('CycleSubPhase',src)}{data.get_suffix('CycleSubPhase',src)}",
-                    attr='CycleSubPhase', field = 'string',
-                    source=src,
-                )
-            )
-            entities.append(
-                ApplianceSensor(
-                    name=f"{data.get_name()} {data.get_sensor_name('ApplianceState',src)}{data.get_suffix('ApplianceState',src)}",
-                    attr='ApplianceState',
-                    source=src,
-                )
-            )
-            entities.append(
-                ApplianceSensor(
-                    name=f"{data.get_name()} {data.get_sensor_name('RemoteControl',src)}{data.get_suffix('RemoteControl',src)}",
-                    attr='RemoteControl',
-                    source=src,
-                )
-            )
-            entities.append(
-                ApplianceSensor(
-                    name=f"{data.get_name()} {data.get_sensor_name('DisplayTemperature',src)}{data.get_suffix('DisplayTemperature',src)}",
-                    attr='DisplayTemperature', field='container',
-                    device_class=SensorDeviceClass.TEMPERATURE,
-                    unit=TEMP_CELSIUS,
-                    source=src,
-                )
-            )
-            entities.append(
-                ApplianceSensor(
-                    name=f"{data.get_name()} {data.get_sensor_name('DisplayFoodProbeTemperature',src)}{data.get_suffix('DisplayFoodProbeTemperature',src)}",
-                    attr='DisplayFoodProbeTemperature', field='container',
-                    device_class=SensorDeviceClass.TEMPERATURE,
-                    unit=TEMP_CELSIUS,
-                    source=src,
-                )
-            )
-            entities.append(
-                ApplianceSensor(
-                    name=f"{data.get_name()} {data.get_sensor_name('AmbientTemperature',src)}{data.get_suffix('AmbientTemperature',src)}",
-                    attr='AmbientTemperature', field='container',
-                    device_class=SensorDeviceClass.TEMPERATURE,
-                    unit=TEMP_CELSIUS,
-                    entity_category=EntityCategory.DIAGNOSTIC,
-                    source=src,
-                )
-            )
-            entities.append(
-                ApplianceSensor(
-                    name=f"{data.get_name()} {data.get_sensor_name('SensorTemperature',src)}{data.get_suffix('SensorTemperature',src)}",
-                    attr='SensorTemperature', field='container',
-                    device_class=SensorDeviceClass.TEMPERATURE,
-                    unit=TEMP_CELSIUS,
-                    source=src,
-                )
-            )
-            entities.append(
-                ApplianceSensor(
-                    name=f"{data.get_name()} {data.get_sensor_name('TargetTemperature',src)}{data.get_suffix('TargetTemperature',src)}",
-                    attr='TargetTemperature', field='container',
-                    device_class=SensorDeviceClass.TEMPERATURE,
-                    unit=TEMP_CELSIUS,
-                    source=src,
-                )
-            )
-            entities.append(
-                ApplianceSensor(
-                    name=f"{data.get_name()} {data.get_sensor_name('DefrostTemperature',src)}{data.get_suffix('DefrostTemperature',src)}",
-                    attr='DefrostTemperature', field='container',
-                    device_class=SensorDeviceClass.TEMPERATURE,
-                    unit=TEMP_CELSIUS,
-                    source=src,
-                )
-            )
-            entities.append(
-                ApplianceSensor(
-                    name=f"{data.get_name()} {data.get_sensor_name('RunningTime',src)}{data.get_suffix('RunningTime',src)}",
-                    attr='RunningTime',
-                    unit=TIME_MINUTES,
-                    source=src,
-                )
-            )
-            entities.append(
-                ApplianceSensor(
-                    name=f"{data.get_name()} {data.get_sensor_name('SensorHumidity',src)}{data.get_suffix('SensorHumidity',src)}",
-                    attr='SensorHumidity', field='numberValue',
-                    device_class=SensorDeviceClass.HUMIDITY,
-                    unit=PERCENTAGE,
-                    entity_category=EntityCategory.DIAGNOSTIC,
-                    source=src,
-                )
-            )
             for command in data.commands_list(src):
                 for key in command:
                     entities.append(
