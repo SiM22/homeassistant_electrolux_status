@@ -188,7 +188,7 @@ class Appliance:
             ApplianceBinary(
                 name=data.get_name(),
                 attr='status',
-                device_class=BinarySensorDeviceClass,
+                device_class=BinarySensorDeviceClass.CONNECTIVITY,
                 entity_category=EntityCategory.DIAGNOSTIC,
                 source='APL',
             ),
