@@ -1,11 +1,8 @@
 """The electrolux Status constants."""
 from homeassistant.const import TIME_MINUTES, TEMP_CELSIUS, PERCENTAGE
-from homeassistant.components.binary_sensor import (
-    DEVICE_CLASS_CONNECTIVITY,
-    DEVICE_CLASS_DOOR,
-    DEVICE_CLASS_LOCK,
-)
+
 from homeassistant.components.sensor import SensorDeviceClass
+from homeassistant.components.binary_sensor import BinarySensorDeviceClass
 
 # Base component constants
 NAME = "Elettrolux status"
@@ -55,8 +52,8 @@ sensors = {
 
 sensors_binary = {
 # Sensor Name: [value field, device class, invert]
-    "DoorState": ["numberValue", DEVICE_CLASS_DOOR, None],
-    "DoorLock":  ["numberValue", DEVICE_CLASS_LOCK, True],
+    "DoorState": ["numberValue", BinarySensorDeviceClass.DOOR, None],
+    "DoorLock":  ["numberValue", BinarySensorDeviceClass.LOCK, True],
 }
 
 sensors_diagnostic = {

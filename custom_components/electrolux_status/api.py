@@ -1,18 +1,12 @@
 import logging
 import math
 
-from homeassistant.components.binary_sensor import (
-    DEVICE_CLASS_CONNECTIVITY,
-    DEVICE_CLASS_DOOR,
-    DEVICE_CLASS_LOCK,
-)
+from homeassistant.components.binary_sensor import BinarySensorDeviceClass
 from homeassistant.components.sensor import SensorDeviceClass
-from homeassistant.components.button import ButtonDeviceClass
 from homeassistant.helpers.entity import EntityCategory
 
 from .const import BINARY_SENSOR, SENSOR, BUTTON, icon_mapping
 from .const import sensors, sensors_diagnostic, sensors_binary
-from homeassistant.const import TIME_MINUTES, TEMP_CELSIUS, PERCENTAGE
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -38,7 +32,7 @@ class ElectroluxLibraryEntity:
             val = self.get_from_states(attr_name, field, source)
             if field == "container":
                 if val["1"]["name"] == "Coefficient" and val["3"]["name"] == "Exponent":
-                    return val["1"]["numberValue"]*(10**val["3"]["numberValue"])
+                    return val["1"]["numberValue"] * (10 ** val["3"]["numberValue"])
             else:
                 return val
         return None
@@ -82,13 +76,18 @@ class ElectroluxLibraryEntity:
         return None
 
     def value_exists(self, attr_name, source):
-        return (attr_name in self.status) or (attr_name in [self.states[k].get("name") for k in self.states if self.states[k].get("source") == source]) or (attr_name in [self.profile[k].get("name") for k in self.profile if self.profile[k].get("source") == source])
+        return (attr_name in self.status) or (attr_name in [self.states[k].get("name") for k in self.states if
+                                                            self.states[k].get("source") == source]) or (
+                           attr_name in [self.profile[k].get("name") for k in self.profile if
+                                         self.profile[k].get("source") == source])
 
     def sources_list(self):
-        return list({self.states[k].get("source") for k in self.states if self.states[k].get("source") not in ["NIU", "APL"]})
+        return list(
+            {self.states[k].get("source") for k in self.states if self.states[k].get("source") not in ["NIU", "APL"]})
 
     def commands_list(self, source):
-        commands = list([self.profile[k].get("steps") for k in self.profile if self.profile[k].get("source") == source and self.profile[k].get("name") == "ExecuteCommand"])
+        commands = list([self.profile[k].get("steps") for k in self.profile if
+                         self.profile[k].get("source") == source and self.profile[k].get("name") == "ExecuteCommand"])
         if len(commands) > 0:
             return commands[0]
         else:
@@ -141,7 +140,8 @@ class ApplianceSensor(ApplianceEntity):
 class ApplianceBinary(ApplianceEntity):
     entity_type = BINARY_SENSOR
 
-    def __init__(self, name, attr, device_class=None, entity_category=None, field=None, invert=False, source=None) -> None:
+    def __init__(self, name, attr, device_class=None, entity_category=None, field=None, invert=False,
+                 source=None) -> None:
         super().__init__(name, attr, device_class, entity_category, field, source)
         self.invert = invert
 
@@ -154,7 +154,8 @@ class ApplianceBinary(ApplianceEntity):
 class ApplianceButton(ApplianceEntity):
     entity_type = BUTTON
 
-    def __init__(self, name, attr, unit=None, device_class=None, entity_category=None, source=None, val_to_send=None, icon=None) -> None:
+    def __init__(self, name, attr, unit=None, device_class=None, entity_category=None, source=None, val_to_send=None,
+                 icon=None) -> None:
         super().__init__(name, attr, device_class, entity_category, None, source)
         self.val_to_send = val_to_send
         self.icon = icon
@@ -178,7 +179,8 @@ class Appliance:
         return next(
             entity
             for entity in self.entities
-            if entity.attr == entity_attr and entity.entity_type == entity_type and entity.source == entity_source and entity.val_to_send == val_to_send
+            if
+            entity.attr == entity_attr and entity.entity_type == entity_type and entity.source == entity_source and entity.val_to_send == val_to_send
         )
 
     def setup(self, data: ElectroluxLibraryEntity):
@@ -186,7 +188,7 @@ class Appliance:
             ApplianceBinary(
                 name=data.get_name(),
                 attr='status',
-                device_class=DEVICE_CLASS_CONNECTIVITY,
+                device_class=BinarySensorDeviceClass.CONNECTIVITY,
                 entity_category=EntityCategory.DIAGNOSTIC,
                 source='APL',
             ),
@@ -197,7 +199,7 @@ class Appliance:
                 source='NIU',
             ),
             ApplianceSensor(
-                name=f"{data.get_name()} {data.get_sensor_name('LinkQualityIndicator','NIU')}",
+                name=f"{data.get_name()} {data.get_sensor_name('LinkQualityIndicator', 'NIU')}",
                 attr='LinkQualityIndicator',
                 device_class=SensorDeviceClass.SIGNAL_STRENGTH,
                 entity_category=EntityCategory.DIAGNOSTIC,
@@ -209,7 +211,7 @@ class Appliance:
             for sensorName, params in sensors.items():
                 entities.append(
                     ApplianceSensor(
-                        name=f"{data.get_name()} {data.get_sensor_name(sensorName,src)}{data.get_suffix(sensorName,src)}",
+                        name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}{data.get_suffix(sensorName, src)}",
                         attr=sensorName,
                         field=params[0],
                         device_class=params[1],
@@ -220,7 +222,7 @@ class Appliance:
             for sensorName, params in sensors_binary.items():
                 entities.append(
                     ApplianceBinary(
-                        name=f"{data.get_name()} {data.get_sensor_name(sensorName,src)}{data.get_suffix(sensorName,src)}",
+                        name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}{data.get_suffix(sensorName, src)}",
                         attr=sensorName,
                         field=params[0],
                         device_class=params[1],
@@ -231,7 +233,7 @@ class Appliance:
             for name, params in sensors_diagnostic.items():
                 entities.append(
                     ApplianceSensor(
-                        name=f"{data.get_name()} {data.get_sensor_name(name,src)}{data.get_suffix(name,src)}",
+                        name=f"{data.get_name()} {data.get_sensor_name(name, src)}{data.get_suffix(name, src)}",
                         attr=name, field=params[0],
                         device_class=params[1],
                         unit=params[2],
@@ -243,7 +245,7 @@ class Appliance:
                 for key in command:
                     entities.append(
                         ApplianceButton(
-                            name=f"{data.get_name()} {command[key]}{data.get_suffix('ExecuteCommand',src)}",
+                            name=f"{data.get_name()} {command[key]}{data.get_suffix('ExecuteCommand', src)}",
                             attr='ExecuteCommand',
                             val_to_send=key,
                             source=src,
