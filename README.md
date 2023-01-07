@@ -22,11 +22,13 @@ Tested with Electrolux and AEG washer-dryer, but probably could be used with som
 - ELECTROLUX EHE6799SA - 609L UltimateTaste 900
 - ELECTROLUX EW9H869E9 - PerfectCare 900 Dryer
 - ELECTROLUX EW8F8669Q8 - PerfectCare 800 Washer
+- Electrolux KEGB9300W - Dishwasher
 - AEG L6FBG841CA - 6000 Series Autodose
 - AEG L7FENQ96 - 7000 Series ProSteam Autodose
 - AEG L7FBE941Q - 7000 Series Prosense Autodose
 - AEG L8FEC96QS - 8000 Series Ökomix Autodose
 - AEG L9WBA61BC - 9000 Series ÖKOKombi DualSense SensiDry
+- AEG BPE558370M - SteamBake 6000
 
 ## Prerequisites
 All devices need configured and Alias set (otherwise the home assistant integration raises the authentication error) into following applications (depends on device type and region):
