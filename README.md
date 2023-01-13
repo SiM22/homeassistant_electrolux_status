@@ -23,6 +23,7 @@ Tested with Electrolux and AEG washer-dryer, but probably could be used with som
 - ELECTROLUX EW9H869E9 - PerfectCare 900 Dryer
 - ELECTROLUX EW8F8669Q8 - PerfectCare 800 Washer
 - Electrolux KEGB9300W - Dishwasher
+- Electrolux EEG69410W - Dishwasher 
 - AEG L6FBG841CA - 6000 Series Autodose
 - AEG L7FENQ96 - 7000 Series ProSteam Autodose
 - AEG L7FBE941Q - 7000 Series Prosense Autodose
