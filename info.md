@@ -1,5 +1,7 @@
 # Home Assistant Electrolux Care Integration (Not Official)
 
+[![Donate](https://img.shields.io/static/v1?label=PayPal&message=Buy%20Me%20a%20Coffee&color=green&logo=PayPal&style=for-the-badge)](https://paypal.me/mauromi?country.x=IT&locale.x=it_IT)
+
 [![GitHub Release][releases-shield]][releases]
 [![License][license-shield]](LICENSE)
 
