@@ -53,7 +53,7 @@ This integration uses the following Python Library:
 ## Disclaimer
 This Home Assistant integration was not made by Electrolux. It is not official, not developed, and not supported by Electrolux.
 
-## Donation
+## Support the project with a donation
 This project is open source and free, but if you want to support us and help us continue to maintain and improve it, you can make a donation through PayPal. 
 Any contribution, no matter how small, is greatly appreciated and will help us keep the project active and healthy. Thank you for your support!
 
