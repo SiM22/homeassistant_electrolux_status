@@ -1,0 +1,31 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Electrolux Status",
+        "description": "If you need help with the configuration have a look here: https://github.com/mauro-midolo/homeassistant_electrolux_status",
+        "data": {
+          "username": "Username",
+          "password": "Password",
+          "region": "Region (emea, apac, na, latam or frigidaire)",
+          "language": "Electrolux provided sensor names and values language"
+        }
+      }
+    },
+    "error": {
+      "auth": "Username/Password is wrong."
+    },
+    "abort": {
+      "single_instance_allowed": "Only a single instance is allowed."
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "data": {
+          "scan_interval": "API update interval (seconds)"
+        }
+      }
+    }
+  }
+}
