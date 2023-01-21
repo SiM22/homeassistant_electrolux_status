@@ -1,0 +1,31 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Electrolux Status",
+        "description": "Jeśli potrzebujesz pomocy przy konfiguracji, zerknij tutaj: https://github.com/mauro-midolo/homeassistant_electrolux_status",
+        "data": {
+          "username": "Nazwa użytkownika",
+          "password": "Hasło",
+          "region": "Region (emea, apac, na, latam or frigidaire)",
+          "language": "Electrolux udostępnia nazwy czujników i wartości języka"
+        }
+      }
+    },
+    "error": {
+      "auth": "Nazwa użytkownika lub hasło jest nieprawidłowe."
+    },
+    "abort": {
+      "single_instance_allowed": "Dozwolona jest tylko jedna instancja."
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "data": {
+          "scan_interval": "Interwał aktualizacji API (sekundy)"
+        }
+      }
+    }
+  }
+}
