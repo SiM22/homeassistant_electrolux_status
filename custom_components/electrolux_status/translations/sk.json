@@ -3,27 +3,27 @@
     "step": {
       "user": {
         "title": "Electrolux Status",
-        "description": "If you need help with the configuration have a look here: https://github.com/mauro-midolo/homeassistant_electrolux_status",
+        "description": "Ak potrebujete pomoc s konfiguráciou, pozrite sa sem:https://github.com/mauro-midolo/homeassistant_electrolux_status",
         "data": {
-          "username": "Username",
-          "password": "Password",
-          "region": "Region (emea, apac, na, latam or frigidaire)",
-          "language": "Electrolux provided sensor names and values language"
+          "username": "Užívateľské meno",
+          "password": "Heslo",
+          "region": "Región (emea, apac, na, latam alebo frigidaire)",
+          "language": "Electrolux poskytol názvy senzorov a jazyk hodnôt"
         }
       }
     },
     "error": {
-      "auth": "Username/Password is wrong."
+      "auth": "Používateľské meno/heslo je nesprávne."
     },
     "abort": {
-      "single_instance_allowed": "Only a single instance is allowed."
+      "single_instance_allowed": "Povolený je len jeden prípad."
     }
   },
   "options": {
     "step": {
       "user": {
         "data": {
-          "scan_interval": "API update interval (seconds)"
+          "scan_interval": "Interval aktualizácie API (sekundy)"
         }
       }
     }
