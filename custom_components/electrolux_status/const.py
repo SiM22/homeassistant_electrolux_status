@@ -76,9 +76,11 @@ sensors_binary = {
 # Sensor Name: [value field, device class, invert]
     "DoorState": ["numberValue", BinarySensorDeviceClass.DOOR, None],
     "DoorLock":  ["numberValue", BinarySensorDeviceClass.LOCK, True],
+    # Washing Machine - Electrolux EW9F149SP PerfectCare
+    # Dryer - Electrolux EW9H188SPC PerfectCare
     "UiLockMode": ["numberValue", None, None],
     "EndOfCycleSound": ["numberValue", None, None],
-    # Washing Machine
+    # Washing Machine - Electrolux EW9F149SP PerfectCare
     "DefaultSoftPlus": ["numberValue", None, None],
     "PreWashPhase": ["numberValue", None, None],
     "RinseHold": ["numberValue", None, None],
@@ -87,7 +89,7 @@ sensors_binary = {
     "WMEconomy": ["numberValue", None, None],
     "AnticreaseWSteam": ["numberValue", None, None],
     "AnticreaseNoSteam": ["numberValue", None, None],
-    # Dryer
+    # Dryer - Electrolux EW9H188SPC PerfectCare
     "Refresh": ["numberValue", None, None],
     "ReversePlus": ["numberValue", None, None],
     "Delicate": ["numberValue", None, None],
