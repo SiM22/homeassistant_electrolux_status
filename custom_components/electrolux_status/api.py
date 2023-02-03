@@ -24,7 +24,7 @@ class ElectroluxLibraryEntity:
         return self.name
 
     def get_value(self, attr_name, field=None, source=None):
-        if attr_name == 'TimeToEnd' or attr_name == 'RunningTime':
+        if attr_name in ['StartTime', 'TimeToEnd', 'RunningTime', 'DryingTime', 'ApplianceTotalWorkingTime', "FCTotalWashingTime"]:
             return self.time_to_end_in_minutes(attr_name, field, source)
         if attr_name in self.status:
             return self.status.get(attr_name)
@@ -35,6 +35,8 @@ class ElectroluxLibraryEntity:
                     return val["1"]["numberValue"] * (10 ** val["3"]["numberValue"])
             else:
                 return val
+        if attr_name in [self.states[st]["container"][cr].get("name") for st in self.states for cr in self.states[st].get("container", [])]:
+            return self.get_from_states(attr_name, field, source)
         return None
 
     def time_to_end_in_minutes(self, attr_name, field, source):
@@ -48,23 +50,34 @@ class ElectroluxLibraryEntity:
     def get_from_states(self, attr_name, field, source):
         for k in self.states:
             if attr_name == self.states[k].get("name") and source == self.states[k].get("source"):
-                if field:
-                    if field in self.states[k].keys():
-                        return self.states[k].get(field)
-                    if field == "string":
-                        if "valueTransl" in self.states[k].keys():
-                            return self.states[k].get("valueTransl").strip(" :.")
-                        if "stringValue" in self.states[k].keys():
-                            return self.states[k].get("stringValue").strip(" :.")
-                        return ""
-                else:
-                    if "valueTransl" in self.states[k].keys():
-                        return self.states[k].get("valueTransl").strip(" :.")
-                    if "stringValue" in self.states[k].keys():
-                        return self.states[k].get("stringValue").strip(" :.")
-                    if "numberValue" in self.states[k].keys():
-                        return self.states[k].get("numberValue")
+                return self._get_states(self.states[k], field) if field else self._get_states(self.states[k])
+            for c in self.states[k].get("container", []):
+                if attr_name == self.states[k]["container"][c].get("name"):
+                    return self._get_states(self.states[k]["container"][c], field) if field else self._get_states(self.states[k]["container"][c])
         return None
+
+    @staticmethod
+    def _get_states(states, field=None):
+        if field:
+            if field in states.keys():
+                return states.get(field)
+            if field == "string":
+                if "valueTransl" in states.keys():
+                    return states.get("valueTransl").strip(" :.")
+                if "valTransl" in states.keys():
+                    return states.get("valTransl").strip(" :.")
+                if "stringValue" in states.keys():
+                    return states.get("stringValue").strip(" :.")
+                return ""
+        else:
+            if "valueTransl" in states.keys():
+                return states.get("valueTransl").strip(" :.")
+            if "valTransl" in states.keys():
+                return states.get("valTransl").strip(" :.")
+            if "stringValue" in states.keys():
+                return states.get("stringValue").strip(" :.")
+            if "numberValue" in states.keys():
+                return states.get("numberValue")
 
     def get_sensor_name(self, attr_name, source):
         for k in self.states:
@@ -73,17 +86,29 @@ class ElectroluxLibraryEntity:
                     return self.states[k].get("nameTransl").strip(" :.")
                 else:
                     return self.states[k].get("name").strip(" :.")
+            if "container" in self.states[k]:
+                for c in self.states[k].get("container", []):
+                    if attr_name == self.states[k]["container"][c].get("name"):
+                        if "nameTransl" in self.states[k]["container"][c].keys():
+                            return self.states[k]["container"][c].get("nameTransl").strip(" :.")
+                        else:
+                            return self.states[k]["container"][c].get("name").strip(" :.")
         return None
 
     def value_exists(self, attr_name, source):
-        return (attr_name in self.status) or (attr_name in [self.states[k].get("name") for k in self.states if
-                                                            self.states[k].get("source") == source]) or (
-                           attr_name in [self.profile[k].get("name") for k in self.profile if
-                                         self.profile[k].get("source") == source])
+        _container_attr = []
+        for k in self.states:
+            for c in self.states[k].get("container", []):
+                _container_attr.append(self.states[k]["container"][c].get("name"))
+        return (attr_name in self.status) or \
+            (attr_name in [self.states[k].get("name") for k in self.states if self.states[k].get("source") == source]) or \
+            (attr_name in [self.profile[k].get("name") for k in self.profile if self.profile[k].get("source") == source]) or \
+            (attr_name in _container_attr)
 
     def sources_list(self):
         return list(
-            {self.states[k].get("source") for k in self.states if self.states[k].get("source") not in ["NIU", "APL"]})
+            {self.states[k].get("source") for k in self.states if self.states[k].get("source") not in ["NIU", "APL"]}
+        )
 
     def commands_list(self, source):
         commands = list([self.profile[k].get("steps") for k in self.profile if
