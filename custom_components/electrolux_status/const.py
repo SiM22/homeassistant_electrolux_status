@@ -48,12 +48,54 @@ sensors = {
     "SensorTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
     "TargetTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
     "DefrostTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
+    # Washing Machine - Electrolux EW9F149SP PerfectCare
+    # Dryer - Electrolux EW9H188SPC PerfectCare
+    "StartTime": [None, None, TIME_MINUTES],
+    "ApplianceTotalWorkingTime": [None, None, TIME_MINUTES],
+    "TotalCycleCounter": [None, None, None],
+    "WaterHardness": ["valueTransl", None, None],
+    # Washing Machine - Electrolux EW9F149SP PerfectCare
+    "DefaultExtraRinse": ["numberValue", None, None],
+    "WaterSoftenerMode": [None, None, None],
+    "ApplianceMode": [None, None, None],
+    "FCTotalWashCyclesCount": [None, None, None],
+    "FCTotalWashingTime": [None, None, None],
+    "SteamValue": ["valTransl", None, None],
+    "ELUXTimeManagerLevel": ["valTransl", None, None],
+    "AnalogSpinSpeed": ["valTransl", None, None],
+    # Dryer - Electrolux EW9H188SPC PerfectCare
+    "WaterTankWarningMode": [None, None, None],
+    "DryingTime": [None, None, None],
+    "HumidityTarget": ["valTransl", None, None],
+    "AntiCreaseValue": [None, None, None],
+    "DrynessValue": ["valTransl", None, None],
+    "ProgramUID": ["valTransl", None, None]
 }
 
 sensors_binary = {
 # Sensor Name: [value field, device class, invert]
     "DoorState": ["numberValue", BinarySensorDeviceClass.DOOR, None],
     "DoorLock":  ["numberValue", BinarySensorDeviceClass.LOCK, True],
+    # Washing Machine - Electrolux EW9F149SP PerfectCare
+    # Dryer - Electrolux EW9H188SPC PerfectCare
+    "UiLockMode": ["numberValue", None, None],
+    "EndOfCycleSound": ["numberValue", None, None],
+    # Washing Machine - Electrolux EW9F149SP PerfectCare
+    "DefaultSoftPlus": ["numberValue", None, None],
+    "PreWashPhase": ["numberValue", None, None],
+    "RinseHold": ["numberValue", None, None],
+    "NightCycle": ["numberValue", None, None],
+    "Stain": ["numberValue", None, None],
+    "WMEconomy": ["numberValue", None, None],
+    "AnticreaseWSteam": ["numberValue", None, None],
+    "AnticreaseNoSteam": ["numberValue", None, None],
+    # Dryer - Electrolux EW9H188SPC PerfectCare
+    "Refresh": ["numberValue", None, None],
+    "ReversePlus": ["numberValue", None, None],
+    "Delicate": ["numberValue", None, None],
+    "TDEnergyLabel": ["numberValue", None, None],
+    "TDEconomy_Eco": ["numberValue", None, None],
+    "TDEconomy_Night": ["numberValue", None, None],
 }
 
 sensors_diagnostic = {
