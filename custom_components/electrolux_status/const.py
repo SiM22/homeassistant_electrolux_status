@@ -55,6 +55,7 @@ sensors = {
     "TotalCycleCounter": [None, None, None],
     "WaterHardness": ["valueTransl", None, None],
     # Washing Machine - Electrolux EW9F149SP PerfectCare
+    "AnalogTemperature": ["numberValue", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
     "DefaultExtraRinse": ["numberValue", None, None],
     "WaterSoftenerMode": [None, None, None],
     "ApplianceMode": [None, None, None],
