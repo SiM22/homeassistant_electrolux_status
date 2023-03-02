@@ -6,7 +6,7 @@ from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.helpers.entity import EntityCategory
 
 from .const import BINARY_SENSOR, SENSOR, BUTTON, icon_mapping
-from .const import sensors, sensors_diagnostic, sensors_binary
+from .const import sensors, sensors_binary
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -226,6 +226,7 @@ class Appliance:
             ApplianceSensor(
                 name=f"{data.get_name()} {data.get_sensor_name('LinkQualityIndicator', 'NIU')}",
                 attr='LinkQualityIndicator',
+                field = 'numberValue',
                 device_class=SensorDeviceClass.SIGNAL_STRENGTH,
                 entity_category=EntityCategory.DIAGNOSTIC,
                 source='NIU',
@@ -233,39 +234,33 @@ class Appliance:
         ]
         sources = data.sources_list()
         for src in sources:
-            for sensorName, params in sensors.items():
-                entities.append(
-                    ApplianceSensor(
-                        name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}{data.get_suffix(sensorName, src)}",
-                        attr=sensorName,
-                        field=params[0],
-                        device_class=params[1],
-                        unit=params[2],
-                        source=src,
-                    )
+            for sensorType, sensors_list in sensors.items():
+                for sensorName, params in sensors_list.items():
+                    entities.append(
+                        ApplianceSensor(
+                            name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}{data.get_suffix(sensorName, src)}",
+                            attr=sensorName,
+                            field=params[0],
+                            device_class=params[1],
+                            entity_category = sensorType,
+                            unit=params[2],
+                            source=src,
+                        )
                 )
-            for sensorName, params in sensors_binary.items():
-                entities.append(
-                    ApplianceBinary(
-                        name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}{data.get_suffix(sensorName, src)}",
-                        attr=sensorName,
-                        field=params[0],
-                        device_class=params[1],
-                        invert=params[2],
-                        source=src,
-                    )
+            for sensorType, sensors_list in sensors_binary.items():
+                for sensorName, params in sensors_list.items():
+                    entities.append(
+                        ApplianceBinary(
+                            name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}{data.get_suffix(sensorName, src)}",
+                            attr=sensorName,
+                            field=params[0],
+                            device_class=params[1],
+                            entity_category = sensorType,
+                            invert=params[2],
+                            source=src,
+                        )
                 )
-            for name, params in sensors_diagnostic.items():
-                entities.append(
-                    ApplianceSensor(
-                        name=f"{data.get_name()} {data.get_sensor_name(name, src)}{data.get_suffix(name, src)}",
-                        attr=name, field=params[0],
-                        device_class=params[1],
-                        unit=params[2],
-                        entity_category=EntityCategory.DIAGNOSTIC,
-                        source=src,
-                    )
-                )
+
             for command in data.commands_list(src):
                 for key in command:
                     entities.append(
