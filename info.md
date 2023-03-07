@@ -8,6 +8,7 @@
 [![hacs][hacsbadge]][hacs]
 [![Project Maintenance][maintenance-shield]][user_profile]
 
+
 This is an integration to Home Assistant to communicate with the Electrolux Connectivity Platform (ECP), Electrolux owned brands, like: Electrolux, AEG, Frigidaire, Husqvarna.
 
 Tested with Electrolux and AEG washer-dryer, but probably could be used with some internet connected ovens, diswashers, fridges, airconditioners.
@@ -22,9 +23,11 @@ Tested with Electrolux and AEG washer-dryer, but probably could be used with som
 - ELECTROLUX KODDP77WX - SteamBake 600
 - ELECTROLUX EHE6799SA - 609L UltimateTaste 900
 - ELECTROLUX EW9H869E9 - PerfectCare 900 Dryer
+- ELECTROLUX EW9H188SPC - PerfectCare 900 Dryer
 - ELECTROLUX EW8F8669Q8 - PerfectCare 800 Washer
-- Electrolux KEGB9300W - Dishwasher
-- Electrolux EEG69410W - Dishwasher 
+- ELECTROLUX EW9F149SP - PerfectCare 900 Washer
+- ELECTROLUX KEGB9300W - Dishwasher
+- ELECTROLUX EEG69410W - Dishwasher 
 - AEG L6FBG841CA - 6000 Series Autodose
 - AEG L7FENQ96 - 7000 Series ProSteam Autodose
 - AEG L7FBE941Q - 7000 Series Prosense Autodose
@@ -52,7 +55,7 @@ This integration uses the following Python Library:
 ## Disclaimer
 This Home Assistant integration was not made by Electrolux. It is not official, not developed, and not supported by Electrolux.
 
-## Donation
+## Support the project with a donation
 This project is open source and free, but if you want to support us and help us continue to maintain and improve it, you can make a donation through PayPal. 
 Any contribution, no matter how small, is greatly appreciated and will help us keep the project active and healthy. Thank you for your support!
 
