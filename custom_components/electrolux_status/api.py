@@ -111,12 +111,19 @@ class ElectroluxLibraryEntity:
         )
 
     def commands_list(self, source):
-        commands = list([self.profile[k].get("steps") for k in self.profile if
-                         self.profile[k].get("source") == source and self.profile[k].get("name") == "ExecuteCommand"])
+        commands = list(self.profile[k].get("steps") for k in self.profile if
+                         self.profile[k].get("source") == source and self.profile[k].get("name") == "ExecuteCommand")
         if len(commands) > 0:
             return commands[0]
         else:
             return []
+
+    def get_command_name(self, command_desc):
+        if "transl" in command_desc:
+            return command_desc["transl"]
+        elif "key" in command_desc:
+            return command_desc["key"]
+        return None
 
     def get_suffix(self, attr_name, source):
         res = list({self.states[k].get("source") for k in self.states if self.states[k].get("name") == attr_name})
@@ -261,17 +268,16 @@ class Appliance:
                         )
                 )
 
-            for command in data.commands_list(src):
-                for key in command:
-                    entities.append(
-                        ApplianceButton(
-                            name=f"{data.get_name()} {command[key]}{data.get_suffix('ExecuteCommand', src)}",
-                            attr='ExecuteCommand',
-                            val_to_send=key,
-                            source=src,
-                            icon=icon_mapping.get(key, "mdi:gesture-tap-button"),
-                        )
+            for key, command in data.commands_list(src).items():
+                entities.append(
+                    ApplianceButton(
+                        name=f"{data.get_name()} {data.get_command_name(command)}{data.get_suffix('ExecuteCommand', src)}",
+                        attr='ExecuteCommand',
+                        val_to_send=key,
+                        source=src,
+                        icon=icon_mapping.get(key, "mdi:gesture-tap-button"),
                     )
+                )
 
         self.entities = [
             entity.setup(data)
