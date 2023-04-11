@@ -8,7 +8,7 @@
           "username": "Nazwa użytkownika",
           "password": "Hasło",
           "region": "Region (emea, apac, na, latam or frigidaire)",
-          "language": "Electrolux udostępnia nazwy czujników i wartości języka"
+          "language": "Język nazw czujników i wartości, dostarczony przez Electrolux."
         }
       }
     },

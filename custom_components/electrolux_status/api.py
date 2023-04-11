@@ -6,7 +6,7 @@ from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.helpers.entity import EntityCategory
 
 from .const import BINARY_SENSOR, SENSOR, BUTTON, icon_mapping
-from .const import sensors, sensors_diagnostic, sensors_binary
+from .const import sensors, sensors_binary
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -111,12 +111,19 @@ class ElectroluxLibraryEntity:
         )
 
     def commands_list(self, source):
-        commands = list([self.profile[k].get("steps") for k in self.profile if
-                         self.profile[k].get("source") == source and self.profile[k].get("name") == "ExecuteCommand"])
+        commands = list(self.profile[k].get("steps") for k in self.profile if
+                         self.profile[k].get("source") == source and self.profile[k].get("name") == "ExecuteCommand")
         if len(commands) > 0:
             return commands[0]
         else:
             return []
+
+    def get_command_name(self, command_desc):
+        if "transl" in command_desc:
+            return command_desc["transl"]
+        elif "key" in command_desc:
+            return command_desc["key"]
+        return None
 
     def get_suffix(self, attr_name, source):
         res = list({self.states[k].get("source") for k in self.states if self.states[k].get("name") == attr_name})
@@ -226,6 +233,7 @@ class Appliance:
             ApplianceSensor(
                 name=f"{data.get_name()} {data.get_sensor_name('LinkQualityIndicator', 'NIU')}",
                 attr='LinkQualityIndicator',
+                field = 'numberValue',
                 device_class=SensorDeviceClass.SIGNAL_STRENGTH,
                 entity_category=EntityCategory.DIAGNOSTIC,
                 source='NIU',
@@ -233,50 +241,43 @@ class Appliance:
         ]
         sources = data.sources_list()
         for src in sources:
-            for sensorName, params in sensors.items():
-                entities.append(
-                    ApplianceSensor(
-                        name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}{data.get_suffix(sensorName, src)}",
-                        attr=sensorName,
-                        field=params[0],
-                        device_class=params[1],
-                        unit=params[2],
-                        source=src,
-                    )
-                )
-            for sensorName, params in sensors_binary.items():
-                entities.append(
-                    ApplianceBinary(
-                        name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}{data.get_suffix(sensorName, src)}",
-                        attr=sensorName,
-                        field=params[0],
-                        device_class=params[1],
-                        invert=params[2],
-                        source=src,
-                    )
-                )
-            for name, params in sensors_diagnostic.items():
-                entities.append(
-                    ApplianceSensor(
-                        name=f"{data.get_name()} {data.get_sensor_name(name, src)}{data.get_suffix(name, src)}",
-                        attr=name, field=params[0],
-                        device_class=params[1],
-                        unit=params[2],
-                        entity_category=EntityCategory.DIAGNOSTIC,
-                        source=src,
-                    )
-                )
-            for command in data.commands_list(src):
-                for key in command:
+            for sensorType, sensors_list in sensors.items():
+                for sensorName, params in sensors_list.items():
                     entities.append(
-                        ApplianceButton(
-                            name=f"{data.get_name()} {command[key]}{data.get_suffix('ExecuteCommand', src)}",
-                            attr='ExecuteCommand',
-                            val_to_send=key,
+                        ApplianceSensor(
+                            name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}{data.get_suffix(sensorName, src)}",
+                            attr=sensorName,
+                            field=params[0],
+                            device_class=params[1],
+                            entity_category = sensorType,
+                            unit=params[2],
                             source=src,
-                            icon=icon_mapping.get(key, "mdi:gesture-tap-button"),
                         )
+                )
+            for sensorType, sensors_list in sensors_binary.items():
+                for sensorName, params in sensors_list.items():
+                    entities.append(
+                        ApplianceBinary(
+                            name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}{data.get_suffix(sensorName, src)}",
+                            attr=sensorName,
+                            field=params[0],
+                            device_class=params[1],
+                            entity_category = sensorType,
+                            invert=params[2],
+                            source=src,
+                        )
+                )
+
+            for key, command in data.commands_list(src).items():
+                entities.append(
+                    ApplianceButton(
+                        name=f"{data.get_name()} {data.get_command_name(command)}{data.get_suffix('ExecuteCommand', src)}",
+                        attr='ExecuteCommand',
+                        val_to_send=key,
+                        source=src,
+                        icon=icon_mapping.get(key, "mdi:gesture-tap-button"),
                     )
+                )
 
         self.entities = [
             entity.setup(data)
