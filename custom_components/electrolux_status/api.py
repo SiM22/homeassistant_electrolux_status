@@ -116,7 +116,7 @@ class ElectroluxLibraryEntity:
         if len(commands) > 0:
             return commands[0]
         else:
-            return []
+            return {}
 
     def get_command_name(self, command_desc):
         if "transl" in command_desc:
