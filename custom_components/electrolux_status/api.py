@@ -234,7 +234,9 @@ class Appliance:
                 name=f"{data.get_name()} {data.get_sensor_name('LinkQualityIndicator', 'NIU')}",
                 attr='LinkQualityIndicator',
                 field = 'numberValue',
-                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                # TODO: https://www.home-assistant.io/integrations/sensor/ SIGNAL_STRENGTH must be dB or dBm
+                # instead of the reported relative bars (format "3/5"). Maybe convert bars to dBm?
+                # device_class=SensorDeviceClass.SIGNAL_STRENGTH,
                 entity_category=EntityCategory.DIAGNOSTIC,
                 source='NIU',
             ),
