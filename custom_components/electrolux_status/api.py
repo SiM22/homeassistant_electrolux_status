@@ -24,6 +24,8 @@ class ElectroluxLibraryEntity:
         return self.name
 
     def get_value(self, attr_name, field=None, source=None):
+        if attr_name in ["LinkQualityIndicator"]:
+            return self.num_to_dbm(attr_name, field, source)
         if attr_name in ['StartTime', 'TimeToEnd', 'RunningTime', 'DryingTime', 'ApplianceTotalWorkingTime', "FCTotalWashingTime"]:
             return self.time_to_end_in_minutes(attr_name, field, source)
         if attr_name in self.status:
@@ -40,11 +42,28 @@ class ElectroluxLibraryEntity:
         return None
 
     def time_to_end_in_minutes(self, attr_name, field, source):
-        seconds = self.get_from_states(attr_name, field, source)
+        seconds=self.get_from_states(attr_name, field, source)
         if seconds is not None:
             if seconds == -1:
                 return -1
-            return int(math.ceil((seconds / 60)))
+            return int(math.ceil((int(seconds) / 60)))
+        return None
+
+    def num_to_dbm(self, attr_name, field, source):
+        number_from_0_to_5 = self.get_from_states(attr_name, field, source)
+        if number_from_0_to_5 is not None:
+            if int(number_from_0_to_5) == 0:
+                return -110
+            if int(number_from_0_to_5) == 1:
+                return -80
+            if int(number_from_0_to_5) == 2:
+                return -70
+            if int(number_from_0_to_5) == 3:
+                return -60
+            if int(number_from_0_to_5) == 4:
+                return -55
+            if int(number_from_0_to_5) == 5:
+                return -20
         return None
 
     def get_from_states(self, attr_name, field, source):
@@ -233,17 +252,16 @@ class Appliance:
             ApplianceSensor(
                 name=f"{data.get_name()} {data.get_sensor_name('LinkQualityIndicator', 'NIU')}",
                 attr='LinkQualityIndicator',
-                field = 'numberValue',
-                # TODO: https://www.home-assistant.io/integrations/sensor/ SIGNAL_STRENGTH must be dB or dBm
-                # instead of the reported relative bars (format "3/5"). Maybe convert bars to dBm?
-                # device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                field='numberValue',
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                unit="dBm",
                 entity_category=EntityCategory.DIAGNOSTIC,
                 source='NIU',
             ),
         ]
         sources = data.sources_list()
         for src in sources:
-            for sensorType, sensors_list in sensors.items():
+            for sensor_type, sensors_list in sensors.items():
                 for sensorName, params in sensors_list.items():
                     entities.append(
                         ApplianceSensor(
@@ -251,12 +269,12 @@ class Appliance:
                             attr=sensorName,
                             field=params[0],
                             device_class=params[1],
-                            entity_category = sensorType,
+                            entity_category = sensor_type,
                             unit=params[2],
                             source=src,
                         )
-                )
-            for sensorType, sensors_list in sensors_binary.items():
+                    )
+            for sensor_type, sensors_list in sensors_binary.items():
                 for sensorName, params in sensors_list.items():
                     entities.append(
                         ApplianceBinary(
@@ -264,12 +282,11 @@ class Appliance:
                             attr=sensorName,
                             field=params[0],
                             device_class=params[1],
-                            entity_category = sensorType,
+                            entity_category=sensor_type,
                             invert=params[2],
                             source=src,
                         )
-                )
-
+                    )
             for key, command in data.commands_list(src).items():
                 entities.append(
                     ApplianceButton(
