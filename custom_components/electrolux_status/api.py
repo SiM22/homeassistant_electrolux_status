@@ -243,7 +243,7 @@ class Appliance:
         ]
         sources = data.sources_list()
         for src in sources:
-            for sensorType, sensors_list in sensors.items():
+            for sensor_type, sensors_list in sensors.items():
                 for sensorName, params in sensors_list.items():
                     entities.append(
                         ApplianceSensor(
@@ -251,12 +251,12 @@ class Appliance:
                             attr=sensorName,
                             field=params[0],
                             device_class=params[1],
-                            entity_category = sensorType,
+                            entity_category = sensor_type,
                             unit=params[2],
                             source=src,
                         )
-                )
-            for sensorType, sensors_list in sensors_binary.items():
+                    )
+            for sensor_type, sensors_list in sensors_binary.items():
                 for sensorName, params in sensors_list.items():
                     entities.append(
                         ApplianceBinary(
@@ -264,12 +264,11 @@ class Appliance:
                             attr=sensorName,
                             field=params[0],
                             device_class=params[1],
-                            entity_category = sensorType,
+                            entity_category=sensor_type,
                             invert=params[2],
                             source=src,
                         )
-                )
-
+                    )
             for key, command in data.commands_list(src).items():
                 entities.append(
                     ApplianceButton(
