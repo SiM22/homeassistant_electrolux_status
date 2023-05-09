@@ -110,17 +110,9 @@ sensors_binary = {
     },
 # Device diagnostic sensors
     EntityCategory.DIAGNOSTIC : {
-
+        "TankA_reserve": ["numberValue", BinarySensorDeviceClass.PROBLEM, False],
+        "TankB_reserve": ["numberValue", BinarySensorDeviceClass.PROBLEM, False],
     }
-}
-
-sensors_binary_diagnostic = {
-# Sensor Name: [value field, device class, invert]
-}
-
-sensors_binary_config = {
-# Sensor Name: [value field, device class, invert]
-
 }
 
 icon_mapping = {
