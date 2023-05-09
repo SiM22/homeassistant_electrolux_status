@@ -1,8 +1,8 @@
 import logging
 import math
+from typing import Union, Any
 
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
-from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.helpers.entity import EntityCategory
 
 from .const import BINARY_SENSOR, SENSOR, BUTTON, icon_mapping
@@ -40,11 +40,11 @@ class ElectroluxLibraryEntity:
         return None
 
     def time_to_end_in_minutes(self, attr_name, field, source):
-        seconds = self.get_from_states(attr_name, field, source)
+        seconds=self.get_from_states(attr_name, field, source)
         if seconds is not None:
             if seconds == -1:
                 return -1
-            return int(math.ceil((seconds / 60)))
+            return int(math.ceil((int(seconds) / 60)))
         return None
 
     def get_from_states(self, attr_name, field, source):
