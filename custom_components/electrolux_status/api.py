@@ -26,7 +26,8 @@ class ElectroluxLibraryEntity:
     def get_value(self, attr_name, field=None, source=None):
         if attr_name in ["LinkQualityIndicator"]:
             return self.num_to_dbm(attr_name, field, source)
-        if attr_name in ['StartTime', 'TimeToEnd', 'RunningTime', 'DryingTime', 'ApplianceTotalWorkingTime', "FCTotalWashingTime"]:
+        if attr_name in ['StartTime', 'TimeToEnd', 'RunningTime', 'DryingTime', 'ApplianceTotalWorkingTime',
+                         "FCTotalWashingTime"]:
             return self.time_to_end_in_minutes(attr_name, field, source)
         if attr_name in self.status:
             return self.status.get(attr_name)
@@ -37,12 +38,13 @@ class ElectroluxLibraryEntity:
                     return val["1"]["numberValue"] * (10 ** val["3"]["numberValue"])
             else:
                 return val
-        if attr_name in [self.states[st]["container"][cr].get("name") for st in self.states for cr in self.states[st].get("container", [])]:
+        if attr_name in [self.states[st]["container"][cr].get("name") for st in self.states for cr in
+                         self.states[st].get("container", [])]:
             return self.get_from_states(attr_name, field, source)
         return None
 
     def time_to_end_in_minutes(self, attr_name, field, source):
-        seconds=self.get_from_states(attr_name, field, source)
+        seconds = self.get_from_states(attr_name, field, source)
         if seconds is not None:
             if seconds == -1:
                 return -1
@@ -68,11 +70,12 @@ class ElectroluxLibraryEntity:
 
     def get_from_states(self, attr_name, field, source):
         for k in self.states:
-            if attr_name == self.states[k].get("name") and source == self.states[k].get("source"):
+            if self.is_contained_in_states(attr_name, k, source):
                 return self._get_states(self.states[k], field) if field else self._get_states(self.states[k])
             for c in self.states[k].get("container", []):
                 if attr_name == self.states[k]["container"][c].get("name"):
-                    return self._get_states(self.states[k]["container"][c], field) if field else self._get_states(self.states[k]["container"][c])
+                    return self._get_states(self.states[k]["container"][c], field) if field else self._get_states(
+                        self.states[k]["container"][c])
         return None
 
     @staticmethod
@@ -100,19 +103,29 @@ class ElectroluxLibraryEntity:
 
     def get_sensor_name(self, attr_name, source):
         for k in self.states:
-            if attr_name == self.states[k].get("name") and source == self.states[k].get("source"):
-                if "nameTransl" in self.states[k].keys():
-                    return self.states[k].get("nameTransl").strip(" :.")
-                else:
-                    return self.states[k].get("name").strip(" :.")
+            if self.is_contained_in_states(attr_name, k, source):
+                return self.get_translate_name(k)
             if "container" in self.states[k]:
-                for c in self.states[k].get("container", []):
-                    if attr_name == self.states[k]["container"][c].get("name"):
-                        if "nameTransl" in self.states[k]["container"][c].keys():
-                            return self.states[k]["container"][c].get("nameTransl").strip(" :.")
-                        else:
-                            return self.states[k]["container"][c].get("name").strip(" :.")
+                return self.find_name_in_container(attr_name, k)
+            return None
+
+    def find_name_in_container(self, attr_name, k):
+        for c in self.states[k].get("container", []):
+            if attr_name == self.states[k]["container"][c].get("name"):
+                if "nameTransl" in self.states[k]["container"][c].keys():
+                    return self.states[k]["container"][c].get("nameTransl").strip(" :.")
+                else:
+                    return self.states[k]["container"][c].get("name").strip(" :.")
         return None
+
+    def get_translate_name(self, k):
+        if "nameTransl" in self.states[k].keys():
+            return self.states[k].get("nameTransl").strip(" :.")
+        else:
+            return self.states[k].get("name").strip(" :.")
+
+    def is_contained_in_states(self, attr_name, k, source):
+        return attr_name == self.states[k].get("name") and source == self.states[k].get("source")
 
     def value_exists(self, attr_name, source):
         _container_attr = []
@@ -120,8 +133,10 @@ class ElectroluxLibraryEntity:
             for c in self.states[k].get("container", []):
                 _container_attr.append(self.states[k]["container"][c].get("name"))
         return (attr_name in self.status) or \
-            (attr_name in [self.states[k].get("name") for k in self.states if self.states[k].get("source") == source]) or \
-            (attr_name in [self.profile[k].get("name") for k in self.profile if self.profile[k].get("source") == source]) or \
+            (attr_name in [self.states[k].get("name") for k in self.states if
+                           self.states[k].get("source") == source]) or \
+            (attr_name in [self.profile[k].get("name") for k in self.profile if
+                           self.profile[k].get("source") == source]) or \
             (attr_name in _container_attr)
 
     def sources_list(self):
@@ -131,7 +146,7 @@ class ElectroluxLibraryEntity:
 
     def commands_list(self, source):
         commands = list(self.profile[k].get("steps") for k in self.profile if
-                         self.profile[k].get("source") == source and self.profile[k].get("name") == "ExecuteCommand")
+                        self.profile[k].get("source") == source and self.profile[k].get("name") == "ExecuteCommand")
         if len(commands) > 0:
             return commands[0]
         else:
@@ -262,24 +277,24 @@ class Appliance:
         sources = data.sources_list()
         for src in sources:
             for sensor_type, sensors_list in sensors.items():
-                for sensorName, params in sensors_list.items():
+                for sensor_name, params in sensors_list.items():
                     entities.append(
                         ApplianceSensor(
-                            name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}{data.get_suffix(sensorName, src)}",
-                            attr=sensorName,
+                            name=f"{data.get_name()} {data.get_sensor_name(sensor_name, src)}{data.get_suffix(sensor_name, src)}",
+                            attr=sensor_name,
                             field=params[0],
                             device_class=params[1],
-                            entity_category = sensor_type,
+                            entity_category=sensor_type,
                             unit=params[2],
                             source=src,
                         )
                     )
             for sensor_type, sensors_list in sensors_binary.items():
-                for sensorName, params in sensors_list.items():
+                for sensor_name, params in sensors_list.items():
                     entities.append(
                         ApplianceBinary(
-                            name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}{data.get_suffix(sensorName, src)}",
-                            attr=sensorName,
+                            name=f"{data.get_name()} {data.get_sensor_name(sensor_name, src)}{data.get_suffix(sensor_name, src)}",
+                            attr=sensor_name,
                             field=params[0],
                             device_class=params[1],
                             entity_category=sensor_type,
