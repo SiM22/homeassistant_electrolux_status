@@ -1,8 +1,8 @@
 import logging
 import math
-from typing import Union, Any
 
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
+from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.helpers.entity import EntityCategory
 
 from .const import BINARY_SENSOR, SENSOR, BUTTON, icon_mapping
@@ -24,8 +24,9 @@ class ElectroluxLibraryEntity:
         return self.name
 
     def get_value(self, attr_name, field=None, source=None):
-        if attr_name in ['StartTime', 'TimeToEnd', 'RunningTime', 'DryingTime', 'ApplianceTotalWorkingTime',
-                         "FCTotalWashingTime"]:
+        if attr_name in ["LinkQualityIndicator"]:
+            return self.num_to_dbm(attr_name, field, source)
+        if attr_name in ['StartTime', 'TimeToEnd', 'RunningTime', 'DryingTime', 'ApplianceTotalWorkingTime', "FCTotalWashingTime"]:
             return self.time_to_end_in_minutes(attr_name, field, source)
         if attr_name in self.status:
             return self.status.get(attr_name)
@@ -47,6 +48,23 @@ class ElectroluxLibraryEntity:
             if seconds == -1:
                 return -1
             return int(math.ceil((int(seconds) / 60)))
+        return None
+
+    def num_to_dbm(self, attr_name, field, source):
+        number_from_0_to_5 = self.get_from_states(attr_name, field, source)
+        if number_from_0_to_5 is not None:
+            if int(number_from_0_to_5) == 0:
+                return -110
+            if int(number_from_0_to_5) == 1:
+                return -80
+            if int(number_from_0_to_5) == 2:
+                return -70
+            if int(number_from_0_to_5) == 3:
+                return -60
+            if int(number_from_0_to_5) == 4:
+                return -55
+            if int(number_from_0_to_5) == 5:
+                return -20
         return None
 
     def get_from_states(self, attr_name, field, source):
@@ -249,6 +267,8 @@ class Appliance:
                 name=f"{data.get_name()} {data.get_sensor_name('LinkQualityIndicator', 'NIU')}",
                 attr='LinkQualityIndicator',
                 field='numberValue',
+                device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                unit="dBm",
                 entity_category=EntityCategory.DIAGNOSTIC,
                 source='NIU',
             ),
