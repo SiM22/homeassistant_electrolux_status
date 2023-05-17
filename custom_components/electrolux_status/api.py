@@ -24,7 +24,8 @@ class ElectroluxLibraryEntity:
         return self.name
 
     def get_value(self, attr_name, field=None, source=None):
-        if attr_name in ['StartTime', 'TimeToEnd', 'RunningTime', 'DryingTime', 'ApplianceTotalWorkingTime', "FCTotalWashingTime"]:
+        if attr_name in ['StartTime', 'TimeToEnd', 'RunningTime', 'DryingTime', 'ApplianceTotalWorkingTime',
+                         "FCTotalWashingTime"]:
             return self.time_to_end_in_minutes(attr_name, field, source)
         if attr_name in self.status:
             return self.status.get(attr_name)
@@ -35,12 +36,13 @@ class ElectroluxLibraryEntity:
                     return val["1"]["numberValue"] * (10 ** val["3"]["numberValue"])
             else:
                 return val
-        if attr_name in [self.states[st]["container"][cr].get("name") for st in self.states for cr in self.states[st].get("container", [])]:
+        if attr_name in [self.states[st]["container"][cr].get("name") for st in self.states for cr in
+                         self.states[st].get("container", [])]:
             return self.get_from_states(attr_name, field, source)
         return None
 
     def time_to_end_in_minutes(self, attr_name, field, source):
-        seconds=self.get_from_states(attr_name, field, source)
+        seconds = self.get_from_states(attr_name, field, source)
         if seconds is not None:
             if seconds == -1:
                 return -1
@@ -53,7 +55,8 @@ class ElectroluxLibraryEntity:
                 return self._get_states(self.states[k], field) if field else self._get_states(self.states[k])
             for c in self.states[k].get("container", []):
                 if attr_name == self.states[k]["container"][c].get("name"):
-                    return self._get_states(self.states[k]["container"][c], field) if field else self._get_states(self.states[k]["container"][c])
+                    return self._get_states(self.states[k]["container"][c], field) if field else self._get_states(
+                        self.states[k]["container"][c])
         return None
 
     @staticmethod
@@ -111,8 +114,10 @@ class ElectroluxLibraryEntity:
             for c in self.states[k].get("container", []):
                 _container_attr.append(self.states[k]["container"][c].get("name"))
         return (attr_name in self.status) or \
-            (attr_name in [self.states[k].get("name") for k in self.states if self.states[k].get("source") == source]) or \
-            (attr_name in [self.profile[k].get("name") for k in self.profile if self.profile[k].get("source") == source]) or \
+            (attr_name in [self.states[k].get("name") for k in self.states if
+                           self.states[k].get("source") == source]) or \
+            (attr_name in [self.profile[k].get("name") for k in self.profile if
+                           self.profile[k].get("source") == source]) or \
             (attr_name in _container_attr)
 
     def sources_list(self):
@@ -122,7 +127,7 @@ class ElectroluxLibraryEntity:
 
     def commands_list(self, source):
         commands = list(self.profile[k].get("steps") for k in self.profile if
-                         self.profile[k].get("source") == source and self.profile[k].get("name") == "ExecuteCommand")
+                        self.profile[k].get("source") == source and self.profile[k].get("name") == "ExecuteCommand")
         if len(commands) > 0:
             return commands[0]
         else:
@@ -243,10 +248,7 @@ class Appliance:
             ApplianceSensor(
                 name=f"{data.get_name()} {data.get_sensor_name('LinkQualityIndicator', 'NIU')}",
                 attr='LinkQualityIndicator',
-                field = 'numberValue',
-                # TODO: https://www.home-assistant.io/integrations/sensor/ SIGNAL_STRENGTH must be dB or dBm
-                # instead of the reported relative bars (format "3/5"). Maybe convert bars to dBm?
-                # device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                field='numberValue',
                 entity_category=EntityCategory.DIAGNOSTIC,
                 source='NIU',
             ),
@@ -261,7 +263,7 @@ class Appliance:
                             attr=sensor_name,
                             field=params[0],
                             device_class=params[1],
-                            entity_category = sensor_type,
+                            entity_category=sensor_type,
                             unit=params[2],
                             source=src,
                         )
