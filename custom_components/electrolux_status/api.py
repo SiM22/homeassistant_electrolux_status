@@ -26,7 +26,8 @@ class ElectroluxLibraryEntity:
     def get_value(self, attr_name, field=None, source=None):
         if attr_name in ["LinkQualityIndicator"]:
             return self.num_to_dbm(attr_name, field, source)
-        if attr_name in ['StartTime', 'TimeToEnd', 'RunningTime', 'DryingTime', 'ApplianceTotalWorkingTime', "FCTotalWashingTime"]:
+        if attr_name in ['StartTime', 'TimeToEnd', 'RunningTime', 'DryingTime', 'ApplianceTotalWorkingTime',
+                         "FCTotalWashingTime"]:
             return self.time_to_end_in_minutes(attr_name, field, source)
         if attr_name in self.status:
             return self.status.get(attr_name)
