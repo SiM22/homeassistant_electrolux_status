@@ -126,5 +126,5 @@ class ElectroluxButtonEntity(Entity):
 
     @property
     def available(self):
-        #TODO: available state should depends on connect state
+        # available state should depends on connect state
         return True
