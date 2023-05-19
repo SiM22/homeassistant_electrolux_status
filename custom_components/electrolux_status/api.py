@@ -84,22 +84,21 @@ class ElectroluxLibraryEntity:
             if field in states.keys():
                 return states.get(field)
             if field == "string":
-                if "valueTransl" in states.keys():
-                    return states.get("valueTransl").strip(" :.")
-                if "valTransl" in states.keys():
-                    return states.get("valTransl").strip(" :.")
-                if "stringValue" in states.keys():
-                    return states.get("stringValue").strip(" :.")
-                return ""
+                ElectroluxLibraryEntity.get_from(states)
         else:
-            if "valueTransl" in states.keys():
-                return states.get("valueTransl").strip(" :.")
-            if "valTransl" in states.keys():
-                return states.get("valTransl").strip(" :.")
-            if "stringValue" in states.keys():
-                return states.get("stringValue").strip(" :.")
-            if "numberValue" in states.keys():
-                return states.get("numberValue")
+            return ElectroluxLibraryEntity.get_from(states)
+
+    @staticmethod
+    def get_from(states):
+        if "valueTransl" in states.keys():
+            return states.get("valueTransl").strip(" :.")
+        if "valTransl" in states.keys():
+            return states.get("valTransl").strip(" :.")
+        if "stringValue" in states.keys():
+            return states.get("stringValue").strip(" :.")
+        if "numberValue" in states.keys():
+            return states.get("numberValue")
+        return ""
 
     def get_sensor_name(self, attr_name, source):
         for k in self.states:
