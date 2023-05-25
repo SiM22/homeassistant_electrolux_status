@@ -70,7 +70,7 @@ class ElectroluxLibraryEntity:
 
     def get_from_states(self, attr_name, field, source):
         for k in self.states:
-            if self.is_contained_in_states(attr_name, k, source):
+            if attr_name == self.states[k].get("name") and source == self.states[k].get("source"):
                 return self._get_states(self.states[k], field) if field else self._get_states(self.states[k])
             for c in self.states[k].get("container", []):
                 if attr_name == self.states[k]["container"][c].get("name"):
@@ -103,29 +103,19 @@ class ElectroluxLibraryEntity:
 
     def get_sensor_name(self, attr_name, source):
         for k in self.states:
-            if self.is_contained_in_states(attr_name, k, source):
-                return self.get_translate_name(k)
-            if "container" in self.states[k]:
-                return self.find_name_in_container(attr_name, k)
-            return None
-
-    def find_name_in_container(self, attr_name, k):
-        for c in self.states[k].get("container", []):
-            if attr_name == self.states[k]["container"][c].get("name"):
-                if "nameTransl" in self.states[k]["container"][c].keys():
-                    return self.states[k]["container"][c].get("nameTransl").strip(" :.")
+            if attr_name == self.states[k].get("name") and source == self.states[k].get("source"):
+                if "nameTransl" in self.states[k].keys():
+                    return self.states[k].get("nameTransl").strip(" :.")
                 else:
-                    return self.states[k]["container"][c].get("name").strip(" :.")
+                    return self.states[k].get("name").strip(" :.")
+            if "container" in self.states[k]:
+                for c in self.states[k].get("container", []):
+                    if attr_name == self.states[k]["container"][c].get("name"):
+                        if "nameTransl" in self.states[k]["container"][c].keys():
+                            return self.states[k]["container"][c].get("nameTransl").strip(" :.")
+                        else:
+                            return self.states[k]["container"][c].get("name").strip(" :.")
         return None
-
-    def get_translate_name(self, k):
-        if "nameTransl" in self.states[k].keys():
-            return self.states[k].get("nameTransl").strip(" :.")
-        else:
-            return self.states[k].get("name").strip(" :.")
-
-    def is_contained_in_states(self, attr_name, k, source):
-        return attr_name == self.states[k].get("name") and source == self.states[k].get("source")
 
     def value_exists(self, attr_name, source):
         _container_attr = []
@@ -277,11 +267,11 @@ class Appliance:
         sources = data.sources_list()
         for src in sources:
             for sensor_type, sensors_list in sensors.items():
-                for sensor_name, params in sensors_list.items():
+                for sensorName, params in sensors_list.items():
                     entities.append(
                         ApplianceSensor(
-                            name=f"{data.get_name()} {data.get_sensor_name(sensor_name, src)}{data.get_suffix(sensor_name, src)}",
-                            attr=sensor_name,
+                            name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}{data.get_suffix(sensorName, src)}",
+                            attr=sensorName,
                             field=params[0],
                             device_class=params[1],
                             entity_category=sensor_type,
@@ -290,11 +280,11 @@ class Appliance:
                         )
                     )
             for sensor_type, sensors_list in sensors_binary.items():
-                for sensor_name, params in sensors_list.items():
+                for sensorName, params in sensors_list.items():
                     entities.append(
                         ApplianceBinary(
-                            name=f"{data.get_name()} {data.get_sensor_name(sensor_name, src)}{data.get_suffix(sensor_name, src)}",
-                            attr=sensor_name,
+                            name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}{data.get_suffix(sensorName, src)}",
+                            attr=sensorName,
                             field=params[0],
                             device_class=params[1],
                             entity_category=sensor_type,
