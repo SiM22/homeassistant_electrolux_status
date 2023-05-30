@@ -2,10 +2,12 @@
 import logging
 
 import homeassistant.helpers.config_validation as cv
+from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.selector import selector
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
+from typing import Mapping, Any
 
 from .pyelectroluxconnect_util import pyelectroluxconnect_util
 from .const import CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, CONF_REGION
@@ -50,6 +52,28 @@ class ElectroluxStatusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
             return await self._show_config_form(user_input)
 
+        return await self._show_config_form(user_input)
+
+    async def async_step_reauth(self, entry_data: Mapping[str, Any]) -> FlowResult:
+        """Handle configuration by re-auth."""
+        return await self.async_step_reauth_validate(entry_data)
+
+    async def async_step_reauth_validate(self, user_input=None):
+        """Handle reauth and validation."""
+        self._errors = {}
+        if user_input is not None:
+            valid = await self._test_credentials(
+                user_input[CONF_USERNAME],
+                user_input[CONF_PASSWORD],
+                user_input[CONF_REGION],
+            )
+            if valid:
+                return self.async_create_entry(
+                    title=user_input[CONF_USERNAME], data=user_input
+                )
+            else:
+                self._errors["base"] = "auth"
+            return await self._show_config_form(user_input)
         return await self._show_config_form(user_input)
 
     @staticmethod
