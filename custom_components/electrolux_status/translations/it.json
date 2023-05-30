@@ -1,0 +1,31 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Electrolux Status",
+        "description": "Se hai bisogno di aiuto con la configurazione, dai un'occhiata qui: https://github.com/mauro-midolo/homeassistant_electrolux_status",
+        "data": {
+          "username": "Username",
+          "password": "Password",
+          "region": "Regione (emea, apac, na, latam o frigidaire)",
+          "language": "Lingua dei nomi e dei valori dei sensori forniti da Electrolux"
+        }
+      }
+    },
+    "error": {
+      "auth": "Username  o password errati."
+    },
+    "abort": {
+      "single_instance_allowed": "È consentita una sola istanza."
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "data": {
+          "scan_interval": "Intervallo di aggiornamento API in secondi"
+        }
+      }
+    }
+  }
+}
