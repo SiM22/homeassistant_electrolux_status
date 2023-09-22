@@ -74,7 +74,7 @@ sensors = {
         "AmbientTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS, None],
         "ApplianceTotalWorkingTime": [None, None, TIME_MINUTES],
         "TotalCycleCounter": [None, None, None],
-        "RinseAidLevel": ["valueTransl", None, None],
+        "RinseAidLevel": [None, None, None],
         "WaterHardness": ["valueTransl", None, None],
         "FCTotalWashCyclesCount": [None, None, None],
         "FCTotalWashingTime": [None, None, None],
