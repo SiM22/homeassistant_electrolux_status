@@ -1,5 +1,5 @@
 """The electrolux Status constants."""
-from homeassistant.const import TIME_MINUTES, TEMP_CELSIUS, PERCENTAGE
+from homeassistant.const import TIME_MINUTES, TEMP_CELSIUS, PERCENTAGE, POWER_WATT
 
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
@@ -49,6 +49,8 @@ sensors = {
         "DisplayFoodProbeTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
         "SensorTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
         "DefrostTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
+        "TargetMicrowavePower": ["numberValue", SensorDeviceClass.ENERGY, POWER_WATT],
+        "OvenProcessIdentifier": ["valueTransl", None, None],
     },
 # Device config sensors
     EntityCategory.CONFIG : {
