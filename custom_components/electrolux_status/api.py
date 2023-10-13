@@ -72,10 +72,13 @@ class ElectroluxLibraryEntity:
         for k in self.states:
             if attr_name == self.states[k].get("name") and source == self.states[k].get("source"):
                 return self._get_states(self.states[k], field) if field else self._get_states(self.states[k])
+            attr_val = None
             for c in self.states[k].get("container", []):
                 if attr_name == self.states[k]["container"][c].get("name"):
-                    return self._get_states(self.states[k]["container"][c], field) if field else self._get_states(
+                    attr_val = self._get_states(self.states[k]["container"][c], field) if field else self._get_states(
                         self.states[k]["container"][c])
+            if attr_val is not None:
+                return attr_val
         return None
 
     @staticmethod
