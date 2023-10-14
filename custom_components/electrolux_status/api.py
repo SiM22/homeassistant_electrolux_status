@@ -24,6 +24,8 @@ class ElectroluxLibraryEntity:
         return self.name
 
     def get_value(self, attr_name, field=None, source=None):
+        if attr_name in ["TargetMicrowavePower"]:
+            return self.fix_microwave_power(attr_name, field, source)
         if attr_name in ["LinkQualityIndicator"]:
             return self.num_to_dbm(attr_name, field, source)
         if attr_name in ['StartTime', 'TimeToEnd', 'RunningTime', 'DryingTime', 'ApplianceTotalWorkingTime',
@@ -51,6 +53,14 @@ class ElectroluxLibraryEntity:
             return int(math.ceil((int(seconds) / 60)))
         return None
 
+    def fix_microwave_power(self, attr_name, field, source):
+        microwave_power = self.get_from_states(attr_name, field, source)
+        if microwave_power is not None:
+            if microwave_power == 65535:
+                return 0
+            return microwave_power
+        return None
+    
     def num_to_dbm(self, attr_name, field, source):
         number_from_0_to_5 = self.get_from_states(attr_name, field, source)
         if number_from_0_to_5 is not None:
