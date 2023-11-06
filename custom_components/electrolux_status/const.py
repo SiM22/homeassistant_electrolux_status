@@ -51,9 +51,6 @@ sensors = {
         "DefrostTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
         "TargetMicrowavePower": ["numberValue", SensorDeviceClass.ENERGY, POWER_WATT],
         "OvenProcessIdentifier": ["valueTransl", None, None],
-    },
-# Device config sensors
-    EntityCategory.CONFIG : {
         "RemoteControl": [None, None, None],
         "DefaultExtraRinse": ["numberValue", None, None],
         "TargetTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
@@ -92,9 +89,6 @@ sensors_binary = {
         "DoorState": ["numberValue", BinarySensorDeviceClass.DOOR, None],
         "DoorLock":  ["numberValue", BinarySensorDeviceClass.LOCK, True],
         "UiLockMode": ["numberValue", None, None],
-    },
-# Device config sensors
-    EntityCategory.CONFIG : {
         "EndOfCycleSound": ["numberValue", None, None],
         "DefaultSoftPlus": ["numberValue", None, None],
         "PreWashPhase": ["numberValue", None, None],
