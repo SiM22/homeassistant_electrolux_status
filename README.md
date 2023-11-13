@@ -34,6 +34,7 @@ Tested with Electrolux and AEG washer-dryer, but probably could be used with som
 - AEG L8FEC96QS - 8000 Series Ökomix Autodose
 - AEG L9WBA61BC - 9000 Series ÖKOKombi DualSense SensiDry
 - AEG BPE558370M - SteamBake 6000
+- AEG FSE76738P - 7000 GlassCare
 
 ## Prerequisites
 All devices need configured and Alias set (otherwise the home assistant integration raises the authentication error) into following applications (depends on device type and region):
