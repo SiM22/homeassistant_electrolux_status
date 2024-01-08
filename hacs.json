@@ -1,5 +1,5 @@
 {
   "name": "Electrolux Care Integration (Not Official)",
-  "hacs": "1.32.1",
-  "homeassistant": "2023.5.3"
+  "hacs": "1.33.0",
+  "homeassistant": "2024.1.2"
 }
