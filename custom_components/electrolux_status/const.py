@@ -1,6 +1,8 @@
 """The electrolux Status constants."""
-from homeassistant.const import TIME_MINUTES, TEMP_CELSIUS, PERCENTAGE, POWER_WATT
-
+from homeassistant.const import UnitOfTime
+from homeassistant.const import UnitOfTemperature
+from homeassistant.const import UnitOfPower
+from homeassistant.const import PERCENTAGE
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
 from homeassistant.helpers.entity import EntityCategory
@@ -40,22 +42,22 @@ sensors = {
 # Sensor Name: [value field, device class, unit]
 # Device state sensors
     None: {
-        "TimeToEnd": [None, None, TIME_MINUTES],
-        "RunningTime": [None, None, TIME_MINUTES],
+        "TimeToEnd": [None, None, UnitOfTime.MINUTES],
+        "RunningTime": [None, None, UnitOfTime.MINUTES],
         "CyclePhase": [None, None, None],
         "CycleSubPhase": ["string", None, None],
         "ApplianceState": [None, None, None],
-        "DisplayTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
-        "DisplayFoodProbeTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
-        "SensorTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
-        "DefrostTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
-        "TargetMicrowavePower": ["numberValue", SensorDeviceClass.ENERGY, POWER_WATT],
+        "DisplayTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
+        "DisplayFoodProbeTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
+        "SensorTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
+        "DefrostTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
+        "TargetMicrowavePower": ["numberValue", SensorDeviceClass.ENERGY, UnitOfPower.WATT],
         "OvenProcessIdentifier": ["valueTransl", None, None],
         "RemoteControl": [None, None, None],
         "DefaultExtraRinse": ["numberValue", None, None],
-        "TargetTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
-        "StartTime": [None, None, TIME_MINUTES],
-        "AnalogTemperature": ["numberValue", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS],
+        "TargetTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
+        "StartTime": [None, None, UnitOfTime.MINUTES],
+        "AnalogTemperature": ["numberValue", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
         "WaterSoftenerMode": [None, None, None],
         "SteamValue": ["valTransl", None, None],
         "ELUXTimeManagerLevel": ["valTransl", None, None],
@@ -70,8 +72,8 @@ sensors = {
 # Device diagnostic sensors
     EntityCategory.DIAGNOSTIC : {
         "SensorHumidity": ["numberValue", SensorDeviceClass.HUMIDITY, PERCENTAGE, None],
-        "AmbientTemperature": ["container", SensorDeviceClass.TEMPERATURE, TEMP_CELSIUS, None],
-        "ApplianceTotalWorkingTime": [None, None, TIME_MINUTES],
+        "AmbientTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS, None],
+        "ApplianceTotalWorkingTime": [None, None, UnitOfTime.MINUTES],
         "TotalCycleCounter": [None, None, None],
         "RinseAidLevel": [None, None, None],
         "WaterHardness": ["valueTransl", None, None],
