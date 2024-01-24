@@ -8,7 +8,17 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=mauro-midolo_homeassistant_electrolux_status&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=mauro-midolo_homeassistant_electrolux_status)
 
 [![Donate](https://img.shields.io/static/v1?label=PayPal&message=Buy%20Me%20a%20Coffee&color=green&logo=PayPal)](https://paypal.me/mauromi?country.x=IT&locale.x=it_IT)
+## ⚠️ Important Notice: API Changes and Library Discontinuation
 
+**Attention:** The APIs provided by Electrolux have undergone significant changes, and the library "pyelectroluxconnect" that this project previously relied on has been discontinued.
+
+I am currently working on a migration plan to adapt to the new APIs. Please be aware that the current state may be affected, and I recommend users to regularly monitor this repository for updates.
+
+If you are interested in contributing to the project and assisting with the integration of the new APIs, your contributions are more than welcome! Feel free to fork the repository, make changes, and submit a pull request.
+
+Thank you for your understanding and support.
+
+## Details
 This is an integration to Home Assistant to communicate with the Electrolux Connectivity Platform (ECP), Electrolux owned brands, like: Electrolux, AEG, Frigidaire, Husqvarna.
 
 Tested with Electrolux and AEG washer-dryer, but probably could be used with some internet connected ovens, diswashers, fridges, airconditioners.
@@ -48,10 +58,6 @@ All devices need configured and Alias set (otherwise the home assistant integrat
 1. Click install.
 2. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Electrolux status".
 3. Insert the Electrolux Care Application credentials
-
-## Thanks
-This integration uses the following Python Library:
-* [https://pypi.org/project/pyelectroluxconnect/](https://pypi.org/project/pyelectroluxconnect/)
 
 ## Disclaimer
 This Home Assistant integration was not made by Electrolux. It is not official, not developed, and not supported by Electrolux.
