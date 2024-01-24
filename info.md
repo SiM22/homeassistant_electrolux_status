@@ -7,11 +7,22 @@
 
 [![hacs][hacsbadge]][hacs]
 [![Project Maintenance][maintenance-shield]][user_profile]
+## ⚠️ Important Notice: API Changes and Library Discontinuation
 
+**Attention:** The APIs provided by Electrolux have undergone significant changes, and the library "pyelectroluxconnect" that this project previously relied on has been discontinued.
 
+I am currently working on a migration plan to adapt to the new APIs. Please be aware that the current state may be affected, and I recommend users to regularly monitor this repository for updates.
+
+If you are interested in contributing to the project and assisting with the integration of the new APIs, your contributions are more than welcome! Feel free to fork the repository, make changes, and submit a pull request.
+
+Thank you for your understanding and support.
+
+## Details
 This is an integration to Home Assistant to communicate with the Electrolux Connectivity Platform (ECP), Electrolux owned brands, like: Electrolux, AEG, Frigidaire, Husqvarna.
 
 Tested with Electrolux and AEG washer-dryer, but probably could be used with some internet connected ovens, diswashers, fridges, airconditioners.
+
+
 
 ### Supported and tested devices
 
