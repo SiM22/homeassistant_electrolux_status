@@ -4,6 +4,7 @@ import math
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.helpers.entity import EntityCategory
+from pyelectroluxocp.apiModels import ApplianceInfoResponse, ApplienceStatusResponse
 
 from .const import BINARY_SENSOR, SENSOR, BUTTON, icon_mapping
 from .const import sensors, sensors_binary
@@ -14,11 +15,12 @@ HEADERS = {"Content-type": "application/json; charset=UTF-8"}
 
 
 class ElectroluxLibraryEntity:
-    def __init__(self, name, status, last_states, appliance_profile):
+    def __init__(self, name, status, last_states: ApplienceStatusResponse,
+                 appliance_info:  ApplianceInfoResponse):
         self.name = name
         self.status: dict = status
         self.states = last_states
-        self.profile = appliance_profile
+        self.appliance_info = appliance_info
 
     def get_name(self):
         return self.name
@@ -33,6 +35,8 @@ class ElectroluxLibraryEntity:
             return self.time_to_end_in_minutes(attr_name, field, source)
         if attr_name in self.status:
             return self.status.get(attr_name)
+
+        #TODO
         if attr_name in [self.states[k].get("name") for k in self.states]:
             val = self.get_from_states(attr_name, field, source)
             if field == "container":
@@ -115,6 +119,7 @@ class ElectroluxLibraryEntity:
                 return states.get("numberValue")
 
     def get_sensor_name(self, attr_name, source):
+        _LOGGER.info("Electrolux get_sensor_name", self.states)
         for k in self.states:
             if attr_name == self.states[k].get("name") and source == self.states[k].get("source"):
                 if "nameTransl" in self.states[k].keys():
@@ -323,8 +328,8 @@ class Appliance:
 
 
 class Appliances:
-    def __init__(self, found_appliances) -> None:
-        self.found_appliances = found_appliances
+    def __init__(self, found_appliances:  dict[str, Appliance]) -> None:
+        self.c = found_appliances
 
     def get_appliance(self, pnc_id):
-        return self.found_appliances.get(pnc_id, None)
+        return self.c.get(pnc_id, None)
