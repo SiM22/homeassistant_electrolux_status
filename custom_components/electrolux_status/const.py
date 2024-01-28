@@ -28,58 +28,67 @@ PLATFORMS = [BINARY_SENSOR, SENSOR, BUTTON]
 CONF_ENABLED = "enabled"
 CONF_USERNAME = "username"
 CONF_PASSWORD = "password"
-CONF_REGION = "region"
 CONF_LANGUAGE = "language"
 CONF_SCAN_INTERVAL = "scan_interval"
 
 # Defaults
 DEFAULT_NAME = DOMAIN
 DEFAULT_SCAN_INTERVAL = 30
-DEFAULT_REGION = "emea"
 DEFAULT_LANGUAGE = "English"
+
+# capabilities model :
+#
+# key = "entry" or "category/entry"
+# {
+#   access = "read" or "readwrite" or "write" (other values ignored)
+#   type = "boolean" or "string" or "number" (other values ignored including "int" type only used in maintenance section)
+#   => problem to differentiate classic numbers to time : check after "time" string in key name ? or temperature
+#   values (optional)= list of available values
+#   min / max / step for type = number
+# }
 
 sensors = {
 # Sensor Name: [value field, device class, unit]
 # Device state sensors
     None: {
-        "TimeToEnd": [None, None, UnitOfTime.MINUTES],
-        "RunningTime": [None, None, UnitOfTime.MINUTES],
-        "CyclePhase": [None, None, None],
-        "CycleSubPhase": ["string", None, None],
-        "ApplianceState": [None, None, None],
-        "DisplayTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
-        "DisplayFoodProbeTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
-        "SensorTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
-        "DefrostTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
-        "TargetMicrowavePower": ["numberValue", SensorDeviceClass.ENERGY, UnitOfPower.WATT],
-        "OvenProcessIdentifier": ["valueTransl", None, None],
-        "RemoteControl": [None, None, None],
-        "DefaultExtraRinse": ["numberValue", None, None],
-        "TargetTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
-        "StartTime": [None, None, UnitOfTime.MINUTES],
-        "AnalogTemperature": ["numberValue", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
-        "WaterSoftenerMode": [None, None, None],
-        "SteamValue": ["valTransl", None, None],
-        "ELUXTimeManagerLevel": ["valTransl", None, None],
-        "AnalogSpinSpeed": ["valTransl", None, None],
-        "WaterTankWarningMode": [None, None, None],
-        "DryingTime": [None, None, None],
-        "HumidityTarget": ["valTransl", None, None],
-        "AntiCreaseValue": [None, None, None],
-        "DrynessValue": ["valTransl", None, None],
-        "ProgramUID": ["valTransl", None, None]
+        "timeToEnd": [None, None, UnitOfTime.MINUTES],
+        "runningTime": [None, None, UnitOfTime.MINUTES],
+        "cyclePhase": [None, None, None],
+        "cycleSubPhase": ["string", None, None],
+        "applianceState": [None, None, None],
+        "displayTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
+        "displayFoodProbeTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
+        "sensorTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
+        "defrostTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
+        "targetMicrowavePower": ["numberValue", SensorDeviceClass.ENERGY, UnitOfPower.WATT],
+        "ovenProcessIdentifier": ["valueTransl", None, None],
+        "remoteControl": [None, None, None],
+        "defaultExtraRinse": ["numberValue", None, None],
+        "targetTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
+        "startTime": [None, None, UnitOfTime.MINUTES],
+        "analogTemperature": ["numberValue", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS],
+        "waterSoftenerMode": [None, None, None],
+        "steamValue": ["valTransl", None, None],
+        "eLUXTimeManagerLevel": ["valTransl", None, None],
+        "analogSpinSpeed": ["valTransl", None, None],
+        "waterTankWarningMode": [None, None, None],
+        "dryingTime": [None, None, None],
+        "humidityTarget": ["valTransl", None, None],
+        "antiCreaseValue": [None, None, None],
+        "drynessValue": ["valTransl", None, None],
+        "programUID": ["valTransl", None, None]
     },
 # Device diagnostic sensors
     EntityCategory.DIAGNOSTIC : {
-        "SensorHumidity": ["numberValue", SensorDeviceClass.HUMIDITY, PERCENTAGE, None],
-        "AmbientTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS, None],
-        "ApplianceTotalWorkingTime": [None, None, UnitOfTime.MINUTES],
-        "TotalCycleCounter": [None, None, None],
-        "RinseAidLevel": [None, None, None],
-        "WaterHardness": ["valueTransl", None, None],
-        "FCTotalWashCyclesCount": [None, None, None],
-        "FCTotalWashingTime": [None, None, None],
-        "ApplianceMode": [None, None, None],
+        "sensorHumidity": ["numberValue", SensorDeviceClass.HUMIDITY, PERCENTAGE, None],
+        "ambientTemperature": ["container", SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS, None],
+        "applianceTotalWorkingTime": [None, None, UnitOfTime.MINUTES],
+        "totalCycleCounter": [None, None, None],
+        "rinseAidLevel": [None, None, None],
+        "waterHardness": ["valueTransl", None, None],
+        "fCTotalWashCyclesCount": [None, None, None],
+        "fCTotalWashingTime": [None, None, None],
+        "applianceMode": [None, None, None],
     }
 }
 
@@ -88,39 +97,39 @@ sensors_binary = {
 # Sensor Name: [value field, device class, invert]
 # Device state sensors
     None: {
-        "DoorState": ["numberValue", BinarySensorDeviceClass.DOOR, None],
-        "DoorLock":  ["numberValue", BinarySensorDeviceClass.LOCK, True],
-        "UiLockMode": ["numberValue", None, None],
-        "EndOfCycleSound": ["numberValue", None, None],
-        "DefaultSoftPlus": ["numberValue", None, None],
-        "PreWashPhase": ["numberValue", None, None],
-        "RinseHold": ["numberValue", None, None],
-        "NightCycle": ["numberValue", None, None],
-        "Stain": ["numberValue", None, None],
-        "WMEconomy": ["numberValue", None, None],
-        "AnticreaseWSteam": ["numberValue", None, None],
-        "AnticreaseNoSteam": ["numberValue", None, None],
-        "Refresh": ["numberValue", None, None],
-        "ReversePlus": ["numberValue", None, None],
-        "Delicate": ["numberValue", None, None],
-        "TDEnergyLabel": ["numberValue", None, None],
-        "TDEconomy_Eco": ["numberValue", None, None],
-        "TDEconomy_Night": ["numberValue", None, None],
+        "doorState": ["numberValue", BinarySensorDeviceClass.DOOR, None],
+        "doorLock":  ["numberValue", BinarySensorDeviceClass.LOCK, True],
+        "uiLockMode": ["numberValue", None, None],
+        "endOfCycleSound": ["numberValue", None, None],
+        "defaultSoftPlus": ["numberValue", None, None],
+        "preWashPhase": ["numberValue", None, None],
+        "rinseHold": ["numberValue", None, None],
+        "nightCycle": ["numberValue", None, None],
+        "stain": ["numberValue", None, None],
+        "wMEconomy": ["numberValue", None, None],
+        "anticreaseWSteam": ["numberValue", None, None],
+        "anticreaseNoSteam": ["numberValue", None, None],
+        "refresh": ["numberValue", None, None],
+        "reversePlus": ["numberValue", None, None],
+        "delicate": ["numberValue", None, None],
+        "tDEnergyLabel": ["numberValue", None, None],
+        "tDEconomy_Eco": ["numberValue", None, None],
+        "tDEconomy_Night": ["numberValue", None, None],
     },
 # Device diagnostic sensors
     EntityCategory.DIAGNOSTIC : {
-        "TankA_reserve": ["numberValue", BinarySensorDeviceClass.PROBLEM, False],
-        "TankB_reserve": ["numberValue", BinarySensorDeviceClass.PROBLEM, False],
+        "tankA_reserve": ["numberValue", BinarySensorDeviceClass.PROBLEM, False],
+        "tankB_reserve": ["numberValue", BinarySensorDeviceClass.PROBLEM, False],
     }
 }
 
 icon_mapping = {
-    "0": "mdi:power-off",
-    "1": "mdi:power-on",
-    "2": "mdi:play",
-    "3": "mdi:stop",
-    "4": "mdi:pause",
-    "5": "mdi:play-pause",
+    "OFF": "mdi:power-off",
+    "ON": "mdi:power-on",
+    "START": "mdi:play",
+    "STOPRESET": "mdi:stop",
+    "PAUSE": "mdi:pause",
+    "RESUME": "mdi:play-pause",
 }
 
 # List of supported Mobile App languages (from https://emea-production.api.electrolux.net/masterdata-service/api/v1/languages)

@@ -17,7 +17,7 @@ from pyelectroluxocp.apiModels import ApplienceStatusResponse
 
 from .pyelectroluxconnect_util import pyelectroluxconnect_util
 from .api import Appliance, Appliances, ElectroluxLibraryEntity
-from .const import CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, CONF_REGION, DEFAULT_REGION
+from .const import CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 from .const import CONF_LANGUAGE, DEFAULT_LANGUAGE
 from .const import CONF_USERNAME
 from .const import DOMAIN
@@ -90,23 +90,26 @@ class ElectroluxStatusDataUpdateCoordinator(DataUpdateCoordinator):
         """Update data via library."""
         await self.async_login()
         found_appliances = {}
-        self.api.get_appliances_info()
         try:
-            appliances_json:list[ApplienceStatusResponse] = await (await self.hass.async_add_executor_job(target=self.api.get_appliances_list))
-            _LOGGER.info("Electrolux update appliances %s", json.dumps(appliances_json))
+            appliances_json:list[ApplienceStatusResponse] = await self.api.get_appliances_list()
+            _LOGGER.debug("Electrolux update appliances %s", json.dumps(appliances_json))
             for appliance in appliances_json:
                 connection_state = appliance.get('connectionState')
-                appliance_state = appliance.get('properties').get('reported').get('applianceState')
-                #appliance_profile = await self.hass.async_add_executor_job(self.api.getApplianceProfile, appliance)
+                # appliance_state = appliance.get('properties').get('reported').get('applianceState')
+                # appliance_profile = await self.hass.async_add_executor_job(self.api.getApplianceProfile, appliance)
                 appliance_name = appliance.get('applianceData').get('applianceName')
                 appliance_infos = await self.api.get_appliances_info([appliance.get('applianceId')])
-                appliance_info = appliance_infos[0]
-                appliance_model = appliance_info.get('model')
-                brand = appliance_info.get('brand')
+                appliance_capabilities = await self.api.get_appliance_capabilities(appliance.get('applianceId'))
+                appliance_status = await self.api.get_appliance_status(appliance.get('applianceId'))
+                appliance_info = None if len(appliance_infos) == 0 else appliance_infos[0]
+                appliance_model = appliance_info.get('model') if appliance_info else ""
+                brand = appliance_info.get('brand') if appliance_info else ""
                 # appliance_profile not reported
-                app = Appliance(appliance_name, appliance, brand, appliance_model)
-                app.setup(ElectroluxLibraryEntity(appliance_name, connection_state, appliance, appliance_info))
+                app = Appliance(appliance_name, appliance_status, brand, appliance_model)
+                app.setup(ElectroluxLibraryEntity(appliance_name, connection_state, appliance_status,
+                                                  appliance_info, appliance_capabilities))
                 found_appliances[appliance_name] = app
+            _LOGGER.debug("Electrolux found appliances %s", ", ".join(list(found_appliances.keys())))
             return {
                 "appliances": Appliances(found_appliances)
             }

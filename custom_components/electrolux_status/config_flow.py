@@ -10,7 +10,7 @@ from homeassistant.core import callback
 from typing import Mapping, Any
 
 from .pyelectroluxconnect_util import pyelectroluxconnect_util
-from .const import CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, CONF_REGION
+from .const import CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 from .const import CONF_LANGUAGE, DEFAULT_LANGUAGE
 from .const import CONF_USERNAME
 from .const import DOMAIN
