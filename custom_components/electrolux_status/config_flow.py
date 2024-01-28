@@ -10,7 +10,7 @@ from homeassistant.core import callback
 from typing import Mapping, Any
 
 from .pyelectroluxconnect_util import pyelectroluxconnect_util
-from .const import CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, CONF_REGION
+from .const import CONF_PASSWORD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 from .const import CONF_LANGUAGE, DEFAULT_LANGUAGE
 from .const import CONF_USERNAME
 from .const import DOMAIN
@@ -40,8 +40,7 @@ class ElectroluxStatusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             valid = await self._test_credentials(
                 user_input[CONF_USERNAME],
-                user_input[CONF_PASSWORD],
-                user_input[CONF_REGION],
+                user_input[CONF_PASSWORD]
             )
             if valid:
                 return self.async_create_entry(
@@ -64,8 +63,7 @@ class ElectroluxStatusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             valid = await self._test_credentials(
                 user_input[CONF_USERNAME],
-                user_input[CONF_PASSWORD],
-                user_input[CONF_REGION],
+                user_input[CONF_PASSWORD]
             )
             if valid:
                 return self.async_create_entry(
@@ -86,12 +84,6 @@ class ElectroluxStatusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         data_schema = {
             vol.Required(CONF_USERNAME): str,
             vol.Required(CONF_PASSWORD): str,
-            vol.Optional(CONF_REGION, default="EMEA"): selector({
-                    "select": {
-                        "options": ["APAC", "EMEA", "LATAM", "NA", "Frigidaire"],
-                        "mode": "dropdown",
-                }
-                }),
                 vol.Optional(CONF_LANGUAGE, default = DEFAULT_LANGUAGE): selector({
                     "select": {
                         "options": list(languages.keys()),
@@ -102,11 +94,6 @@ class ElectroluxStatusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema = {
                 vol.Required(CONF_USERNAME): str,
                 vol.Required(CONF_PASSWORD): str,
-                vol.Optional(CONF_REGION, default="EMEA"): selector({
-                    "select": {
-                        "options": ["APAC", "EMEA", "LATAM", "NA", "Frigidaire"],
-                        "mode": "dropdown"}
-                }),
                 vol.Optional(CONF_LANGUAGE, default = DEFAULT_LANGUAGE): selector({
                     "select": {
                         "options": list(languages.keys()),
@@ -119,11 +106,11 @@ class ElectroluxStatusFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=self._errors,
         )
 
-    async def _test_credentials(self, username, password, region):
+    async def _test_credentials(self, username, password):
         """Return true if credentials is valid."""
         try:
-            client = pyelectroluxconnect_util.get_session(username, password, region)
-            await self.hass.async_add_executor_job(client.login)
+            client = pyelectroluxconnect_util.get_session(username, password)
+            await self.hass.async_add_executor_job(client.get_appliances_list)
             return True
         except Exception as inst:  # pylint: disable=broad-except
             _LOGGER.exception(inst)
