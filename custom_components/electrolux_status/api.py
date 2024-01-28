@@ -30,9 +30,10 @@ class ElectroluxLibraryEntity:
 
     def get_value(self, attr_name, field=None, source=None):
         if source and source != '':
-            entry = self.reported_state[source][attr_name]
+            container = self.reported_state.get(source)
+            entry = container.get(attr_name)
         else:
-            entry = self.reported_state[attr_name]
+            entry = self.reported_state.get(attr_name)
         return entry
         # if attr_name in ["TargetMicrowavePower"]:
         #     return self.fix_microwave_power(attr_name, field, source)
@@ -136,6 +137,10 @@ class ElectroluxLibraryEntity:
         # Extract category ex: "fCMiscellaneousState/detergentExtradosage" to "fCMiscellaneousState"
         # or "" if none
         return attr_name.rpartition('/')[0]
+
+    def get_entity_name(self, attr_name: str, container: str = None):
+        # Convert format "fCMiscellaneousState/detergentExtradosage" to "detergentExtradosage"
+        return attr_name.rpartition('/')[-1] or attr_name
 
     # def value_exists(self, attr_name, source):
     #     _container_attr = []
@@ -284,12 +289,13 @@ class Appliance:
 
         # For each capability src
         for src in sources:
+            entity_name = data.get_entity_name(src)
             category = data.get_category(src)
             # For each sensor in the const definition
             for sensor_type, sensors_list in sensors.items():
                 for sensorName, params in sensors_list.items():
                     # Check if the sensor exists in the capabilities
-                    if sensorName == src:
+                    if sensorName == entity_name:
                         entities.append(
                             ApplianceSensor(
                                 name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}",
@@ -303,7 +309,7 @@ class Appliance:
                         )
             for sensor_type, sensors_list in sensors_binary.items():
                 for sensorName, params in sensors_list.items():
-                    if sensorName == src:
+                    if sensorName == entity_name:
                         entities.append(
                             ApplianceBinary(
                                 name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}",

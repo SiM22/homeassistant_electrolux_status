@@ -109,7 +109,8 @@ class ElectroluxStatusDataUpdateCoordinator(DataUpdateCoordinator):
                 app.setup(ElectroluxLibraryEntity(appliance_name, connection_state, appliance_status,
                                                   appliance_info, appliance_capabilities))
                 found_appliances[appliance_name] = app
-            _LOGGER.debug("Electrolux found appliances %s", ", ".join(list(found_appliances.keys())))
+                _LOGGER.debug("Electrolux appliance capabilities %s", json.dumps(appliance_capabilities))
+            _LOGGER.debug("Electrolux found appliance %s", ", ".join(list(found_appliances.keys())))
             return {
                 "appliances": Appliances(found_appliances)
             }
