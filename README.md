@@ -7,17 +7,8 @@
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=mauro-midolo_homeassistant_electrolux_status&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=mauro-midolo_homeassistant_electrolux_status)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=mauro-midolo_homeassistant_electrolux_status&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=mauro-midolo_homeassistant_electrolux_status)
 
-## PLEASE NOTE: This is a fork of the original integration made by Mauro Midolo. The original integration was taken down due to fear of financial repercussions.
-
-## ⚠️ Important Notice: API Changes and Library Discontinuation
-
-**Attention:** The APIs provided by Electrolux have undergone significant changes, and the library "pyelectroluxconnect" that this project previously relied on has been discontinued.
-
-I am currently working on a migration plan to adapt to the new APIs. Please be aware that the current state may be affected, and I recommend users to regularly monitor this repository for updates.
-
-If you are interested in contributing to the project and assisting with the integration of the new APIs, your contributions are more than welcome! Feel free to fork the repository, make changes, and submit a pull request.
-
-Thank you for your understanding and support.
+## ⚠️ PLEASE NOTE: 
+This is a fork of the original integration made by Mauro Midolo. The original integration was taken down due to fear of financial repercussions.
 
 ## Details
 This is an integration to Home Assistant to communicate with the Electrolux Connectivity Platform (ECP), Electrolux owned brands, like: Electrolux, AEG, Frigidaire, Husqvarna.
