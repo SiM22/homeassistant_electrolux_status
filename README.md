@@ -7,7 +7,7 @@
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=mauro-midolo_homeassistant_electrolux_status&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=mauro-midolo_homeassistant_electrolux_status)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=mauro-midolo_homeassistant_electrolux_status&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=mauro-midolo_homeassistant_electrolux_status)
 
-## PLEASE NOTE: This is a forsk of the original integration made by Mauro Midolo. The original integration was taken down due to fear of financial repercussions.
+## PLEASE NOTE: This is a fork of the original integration made by Mauro Midolo. The original integration was taken down due to fear of financial repercussions.
 
 ## ⚠️ Important Notice: API Changes and Library Discontinuation
 
