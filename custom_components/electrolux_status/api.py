@@ -2,6 +2,7 @@ import logging
 import math
 import re
 
+from homeassistant.const import UnitOfTemperature
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.helpers.entity import EntityCategory
@@ -29,19 +30,19 @@ class ElectroluxLibraryEntity:
         return self.name
 
     def get_value(self, attr_name, field=None, source=None):
-        if source and source != '':
+        if attr_name in ['startTime', 'timeToEnd', 'runningTime', 'dryingTime', 'applianceTotalWorkingTime']:
+            return self.time_to_end_in_minutes(attr_name, field, source)
+        if attr_name in ['analogTemperature']:
             container = self.reported_state.get(source)
-            entry = container.get(attr_name)
-        else:
-            entry = self.reported_state.get(attr_name)
-        return entry
+            entry = container.get(attr_name).split("_")
+            if len(entry) > 1:
+                return f"{entry[0]}{getattr(UnitOfTemperature, entry[1])}"
+            return entry[0].capitalize()
+
         # if attr_name in ["TargetMicrowavePower"]:
         #     return self.fix_microwave_power(attr_name, field, source)
         # if attr_name in ["LinkQualityIndicator"]:
         #     return self.num_to_dbm(attr_name, field, source)
-        # if attr_name in ['StartTime', 'TimeToEnd', 'RunningTime', 'DryingTime', 'ApplianceTotalWorkingTime',
-        #                  "FCTotalWashingTime"]:
-        #     return self.time_to_end_in_minutes(attr_name, field, source)
         # if attr_name in self.status:
         #     return self.status.get(attr_name)
         # if attr_name in [self.state[k].get("name") for k in self.state]:
@@ -56,14 +57,33 @@ class ElectroluxLibraryEntity:
         #     return self.get_from_states(attr_name, field, source)
         # return None
 
-    # def time_to_end_in_minutes(self, attr_name, field, source):
-    #     seconds = self.get_from_states(attr_name, field, source)
-    #     if seconds is not None:
-    #         if seconds == -1:
-    #             return -1
-    #         return int(math.ceil((int(seconds) / 60)))
-    #     return None
-    #
+        return self.get_from_state(attr_name, field, source)
+
+    def time_to_end_in_minutes(self, attr_name, field, source):
+        seconds = self.get_from_state(attr_name, field, source)
+        if seconds is not None:
+            if seconds == -1:
+                return -1
+            return int(math.ceil((int(seconds) / 60)))
+        return None
+
+    def get_from_state(self, attr_name, field, source):
+        if source and source != '':
+            container = self.reported_state.get(source)
+            entry = container.get(attr_name)
+        else:
+            entry = self.reported_state.get(attr_name)
+        if field and field != '':
+            if field == "string":
+                entry = self._get_string(entry)
+            else:
+                entry = getattr(field, entry, entry)
+        return entry
+
+    @staticmethod
+    def _get_string(st):
+        return st.capitalize().replace('_', ' ')
+
     # def fix_microwave_power(self, attr_name, field, source):
     #     microwave_power = self.get_from_states(attr_name, field, source)
     #     if microwave_power is not None:
@@ -125,8 +145,10 @@ class ElectroluxLibraryEntity:
     #         if "numberValue" in states.keys():
     #             return states.get("numberValue")
 
-    def get_sensor_name(self, attr_name: str, container: str = None):
+    def get_sensor_name(self, attr_name: str, container: str = None, friendly_name: str = None):
         # Convert format "fCMiscellaneousState/detergentExtradosage" to "Detergent extradosage"
+        if friendly_name and friendly_name != '':
+            attr_name = friendly_name
         attr_name = attr_name.rpartition('/')[-1] or attr_name
         attr_name = attr_name[0].upper() + attr_name[1:]
         attr_name = " ".join(re.findall('[A-Z][^A-Z]*', attr_name))
@@ -298,12 +320,12 @@ class Appliance:
                     if sensorName == entity_name:
                         entities.append(
                             ApplianceSensor(
-                                name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}",
+                                name=f"{data.get_name()} {data.get_sensor_name(sensorName, src, params[0])}",
                                 attr=sensorName,
-                                field=params[0],
-                                device_class=params[1],
+                                field=params[1],
+                                device_class=params[2],
                                 entity_category=sensor_type,
-                                unit=params[2],
+                                unit=params[3],
                                 source=category,
                             )
                         )
@@ -312,12 +334,12 @@ class Appliance:
                     if sensorName == entity_name:
                         entities.append(
                             ApplianceBinary(
-                                name=f"{data.get_name()} {data.get_sensor_name(sensorName, src)}",
+                                name=f"{data.get_name()} {data.get_sensor_name(sensorName, src, params[0])}",
                                 attr=sensorName,
-                                field=params[0],
-                                device_class=params[1],
+                                field=params[1],
+                                device_class=params[2],
                                 entity_category=sensor_type,
-                                invert=params[2],
+                                invert=params[3],
                                 source=category,
                             )
                         )
